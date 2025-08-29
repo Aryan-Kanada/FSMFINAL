@@ -1,0 +1,13 @@
+# OMRON Auto Rack35 AS/RS System Requirements
+# For 35-position storage rack with LED indicators and push button controls
+
+# Core OPC UA Communication
+opcua>=0.98.13          # Python OPC UA library for OMRON NX102-9000 communication
+
+# Standard libraries (included with Python):
+# - threading, queue, json, time, datetime, dataclasses, typing, enum, logging, concurrent.futures
+
+# Optional for advanced features:
+# numpy>=1.21.0         # For data analysis
+# matplotlib>=3.4.0     # For plotting storage patterns  
+# pandas>=1.3.0         # For inventory reporting

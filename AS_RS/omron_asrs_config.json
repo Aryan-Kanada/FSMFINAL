@@ -1,0 +1,463 @@
+{
+  "system": {
+    "name": "Auto Rack35 AS/RS - OMRON NX102-9000",
+    "type": "AUTOMATED_STORAGE_RETRIEVAL",
+    "description": "35-position AS/RS with LED indicators and push button controls",
+    "version": "2.0",
+    "plc_model": "OMRON NX102-9000"
+  },
+  "communication": {
+    "protocol": "OPC_UA",
+    "endpoint": "opc.tcp://10.10.14.113:4840",
+    "namespace": 4,
+    "timeout": 5.0,
+    "retry_count": 3,
+    "retry_delay": 1.0
+  },
+  "storage_rack": {
+    "total_positions": 35,
+    "layout": {
+      "rows": 7,
+      "columns": 5,
+      "description": "35-position storage rack with individual LED/PB control"
+    },
+    "positions": {
+      "position_template": {
+        "led_node": "ns=4;s=led{position}",
+        "pushbutton_node": "ns=4;s=pb{position}",
+        "description": "Storage position {position}"
+      }
+    }
+  },
+  "control_nodes": {
+    "emergency_kill": "ns=4;s=kill",
+    "system_status": "ns=4;s=system_status",
+    "system_mode": "ns=4;s=system_mode",
+    "alarm_status": "ns=4;s=alarm_status"
+  },
+  "operations": {
+    "led_control": {
+      "off": false,
+      "on": true,
+      "blink_pattern": "custom"
+    },
+    "position_assignment": {
+      "strategy": "SEQUENTIAL",
+      "start_position": 1,
+      "end_position": 35
+    },
+    "safety": {
+      "emergency_stop_monitoring": true,
+      "led_status_validation": true,
+      "position_conflict_detection": true
+    }
+  },
+  "visual_feedback": {
+    "led_states": {
+      "empty": {
+        "value": false,
+        "description": "Position empty"
+      },
+      "occupied": {
+        "value": true,
+        "description": "Position occupied"
+      },
+      "reserved": {
+        "blink": true,
+        "description": "Position reserved for incoming item"
+      }
+    },
+    "status_display": {
+      "show_position_map": true,
+      "show_led_states": true,
+      "show_occupancy_stats": true
+    }
+  },
+  "storage_positions": {
+    "position_01": {
+      "id": 1,
+      "name": "Position 1",
+      "led_node": "ns=4;s=led1",
+      "pushbutton_node": "ns=4;s=pb1",
+      "row": 1,
+      "column": 1,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_02": {
+      "id": 2,
+      "name": "Position 2",
+      "led_node": "ns=4;s=led2",
+      "pushbutton_node": "ns=4;s=pb2",
+      "row": 1,
+      "column": 2,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_03": {
+      "id": 3,
+      "name": "Position 3",
+      "led_node": "ns=4;s=led3",
+      "pushbutton_node": "ns=4;s=pb3",
+      "row": 1,
+      "column": 3,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_04": {
+      "id": 4,
+      "name": "Position 4",
+      "led_node": "ns=4;s=led4",
+      "pushbutton_node": "ns=4;s=pb4",
+      "row": 1,
+      "column": 4,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_05": {
+      "id": 5,
+      "name": "Position 5",
+      "led_node": "ns=4;s=led5",
+      "pushbutton_node": "ns=4;s=pb5",
+      "row": 1,
+      "column": 5,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_06": {
+      "id": 6,
+      "name": "Position 6",
+      "led_node": "ns=4;s=led6",
+      "pushbutton_node": "ns=4;s=pb6",
+      "row": 2,
+      "column": 1,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_07": {
+      "id": 7,
+      "name": "Position 7",
+      "led_node": "ns=4;s=led7",
+      "pushbutton_node": "ns=4;s=pb7",
+      "row": 2,
+      "column": 2,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_08": {
+      "id": 8,
+      "name": "Position 8",
+      "led_node": "ns=4;s=led8",
+      "pushbutton_node": "ns=4;s=pb8",
+      "row": 2,
+      "column": 3,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_09": {
+      "id": 9,
+      "name": "Position 9",
+      "led_node": "ns=4;s=led9",
+      "pushbutton_node": "ns=4;s=pb9",
+      "row": 2,
+      "column": 4,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_10": {
+      "id": 10,
+      "name": "Position 10",
+      "led_node": "ns=4;s=led10",
+      "pushbutton_node": "ns=4;s=pb10",
+      "row": 2,
+      "column": 5,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_11": {
+      "id": 11,
+      "name": "Position 11",
+      "led_node": "ns=4;s=led11",
+      "pushbutton_node": "ns=4;s=pb11",
+      "row": 3,
+      "column": 1,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_12": {
+      "id": 12,
+      "name": "Position 12",
+      "led_node": "ns=4;s=led12",
+      "pushbutton_node": "ns=4;s=pb12",
+      "row": 3,
+      "column": 2,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_13": {
+      "id": 13,
+      "name": "Position 13",
+      "led_node": "ns=4;s=led13",
+      "pushbutton_node": "ns=4;s=pb13",
+      "row": 3,
+      "column": 3,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_14": {
+      "id": 14,
+      "name": "Position 14",
+      "led_node": "ns=4;s=led14",
+      "pushbutton_node": "ns=4;s=pb14",
+      "row": 3,
+      "column": 4,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_15": {
+      "id": 15,
+      "name": "Position 15",
+      "led_node": "ns=4;s=led15",
+      "pushbutton_node": "ns=4;s=pb15",
+      "row": 3,
+      "column": 5,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_16": {
+      "id": 16,
+      "name": "Position 16",
+      "led_node": "ns=4;s=led16",
+      "pushbutton_node": "ns=4;s=pb16",
+      "row": 4,
+      "column": 1,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_17": {
+      "id": 17,
+      "name": "Position 17",
+      "led_node": "ns=4;s=led17",
+      "pushbutton_node": "ns=4;s=pb17",
+      "row": 4,
+      "column": 2,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_18": {
+      "id": 18,
+      "name": "Position 18",
+      "led_node": "ns=4;s=led18",
+      "pushbutton_node": "ns=4;s=pb18",
+      "row": 4,
+      "column": 3,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_19": {
+      "id": 19,
+      "name": "Position 19",
+      "led_node": "ns=4;s=led19",
+      "pushbutton_node": "ns=4;s=pb19",
+      "row": 4,
+      "column": 4,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_20": {
+      "id": 20,
+      "name": "Position 20",
+      "led_node": "ns=4;s=led20",
+      "pushbutton_node": "ns=4;s=pb20",
+      "row": 4,
+      "column": 5,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_21": {
+      "id": 21,
+      "name": "Position 21",
+      "led_node": "ns=4;s=led21",
+      "pushbutton_node": "ns=4;s=pb21",
+      "row": 5,
+      "column": 1,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_22": {
+      "id": 22,
+      "name": "Position 22",
+      "led_node": "ns=4;s=led22",
+      "pushbutton_node": "ns=4;s=pb22",
+      "row": 5,
+      "column": 2,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_23": {
+      "id": 23,
+      "name": "Position 23",
+      "led_node": "ns=4;s=led23",
+      "pushbutton_node": "ns=4;s=pb23",
+      "row": 5,
+      "column": 3,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_24": {
+      "id": 24,
+      "name": "Position 24",
+      "led_node": "ns=4;s=led24",
+      "pushbutton_node": "ns=4;s=pb24",
+      "row": 5,
+      "column": 4,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_25": {
+      "id": 25,
+      "name": "Position 25",
+      "led_node": "ns=4;s=led25",
+      "pushbutton_node": "ns=4;s=pb25",
+      "row": 5,
+      "column": 5,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_26": {
+      "id": 26,
+      "name": "Position 26",
+      "led_node": "ns=4;s=led26",
+      "pushbutton_node": "ns=4;s=pb26",
+      "row": 6,
+      "column": 1,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_27": {
+      "id": 27,
+      "name": "Position 27",
+      "led_node": "ns=4;s=led27",
+      "pushbutton_node": "ns=4;s=pb27",
+      "row": 6,
+      "column": 2,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_28": {
+      "id": 28,
+      "name": "Position 28",
+      "led_node": "ns=4;s=led28",
+      "pushbutton_node": "ns=4;s=pb28",
+      "row": 6,
+      "column": 3,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_29": {
+      "id": 29,
+      "name": "Position 29",
+      "led_node": "ns=4;s=led29",
+      "pushbutton_node": "ns=4;s=pb29",
+      "row": 6,
+      "column": 4,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_30": {
+      "id": 30,
+      "name": "Position 30",
+      "led_node": "ns=4;s=led30",
+      "pushbutton_node": "ns=4;s=pb30",
+      "row": 6,
+      "column": 5,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_31": {
+      "id": 31,
+      "name": "Position 31",
+      "led_node": "ns=4;s=led31",
+      "pushbutton_node": "ns=4;s=pb31",
+      "row": 7,
+      "column": 1,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_32": {
+      "id": 32,
+      "name": "Position 32",
+      "led_node": "ns=4;s=led32",
+      "pushbutton_node": "ns=4;s=pb32",
+      "row": 7,
+      "column": 2,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_33": {
+      "id": 33,
+      "name": "Position 33",
+      "led_node": "ns=4;s=led33",
+      "pushbutton_node": "ns=4;s=pb33",
+      "row": 7,
+      "column": 3,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_34": {
+      "id": 34,
+      "name": "Position 34",
+      "led_node": "ns=4;s=led34",
+      "pushbutton_node": "ns=4;s=pb34",
+      "row": 7,
+      "column": 4,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    },
+    "position_35": {
+      "id": 35,
+      "name": "Position 35",
+      "led_node": "ns=4;s=led35",
+      "pushbutton_node": "ns=4;s=pb35",
+      "row": 7,
+      "column": 5,
+      "occupied": false,
+      "product_id": null,
+      "stored_at": null
+    }
+  }
+}
