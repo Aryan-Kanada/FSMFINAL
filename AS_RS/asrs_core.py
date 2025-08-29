@@ -1,6 +1,6 @@
 """
-BVM AS/RS Core System - Using Proven Asyncua Connection
-Based on user's working plc_monitor.py and new.py pattern
+BVM AS/RS Core System - Updated for Actual PLC Variable Names
+Uses discovered variable pattern: A1/A1S, B1/B1S, etc.
 """
 
 import asyncio
@@ -60,6 +60,17 @@ class StoragePosition:
         return f"R{self.row}C{self.column}"
 
     @property
+    def plc_button_name(self) -> str:
+        """Get PLC button variable name (A1, B2, etc.)"""
+        row_letter = chr(ord('A') + self.row - 1)  # A, B, C, D, E
+        return f"{row_letter}{self.column}"
+
+    @property
+    def plc_led_name(self) -> str:
+        """Get PLC LED variable name (A1S, B2S, etc.)"""
+        return f"{self.plc_button_name}S"
+
+    @property
     def is_available(self) -> bool:
         return self.status == PositionStatus.EMPTY
 
@@ -78,43 +89,42 @@ class ASRSTask:
     priority: int = 5
 
 class ProvenAsyncOPCClient:
-    """Async OPC UA client using user's proven connection pattern"""
+    """Async OPC UA client using discovered PLC variable names"""
 
     def __init__(self, config: Dict[str, Any]):
         self.config = config
         self.client = None
         self.connected = False
 
-        # Node references - using proven pattern
+        # Node references - using discovered pattern
         self.variables_folder = None
         self.variable_nodes = {}  # Store all nodes by name
-        self.led_nodes = {}
-        self.button_nodes = {}
-        self.kill_node = None
+        self.led_nodes = {}       # A1S, A2S, etc. -> position_id
+        self.button_nodes = {}    # A1, A2, etc. -> position_id
+        self.home_node = None     # Home = emergency
 
         # Statistics
         self.read_count = 0
         self.write_count = 0
         self.error_count = 0
 
-        # Connection details from user's working code
+        # Connection details
         self.plc_url = self.config['plc']['url']
         self.variables_path = self.config['paths']['variables_path']
 
     async def connect(self) -> bool:
-        """Connect using user's proven pattern from new.py"""
+        """Connect using proven asyncua pattern"""
         try:
             logger.info(f"Attempting to connect to PLC at {self.plc_url}...")
 
-            # Use user's proven async context manager pattern
             self.client = Client(url=self.plc_url)
             await self.client.connect()
 
             self.connected = True
             logger.info("Successfully connected to the PLC!")
 
-            # Initialize variables using proven navigation pattern
-            await self._initialize_variables_proven_way()
+            # Initialize variables using discovered pattern
+            await self._initialize_variables_discovered_way()
 
             return True
 
@@ -133,16 +143,14 @@ class ProvenAsyncOPCClient:
             except Exception as e:
                 logger.warning(f"Disconnect warning: {e}")
 
-    async def _initialize_variables_proven_way(self):
-        """Initialize variables using user's proven navigation pattern"""
+    async def _initialize_variables_discovered_way(self):
+        """Initialize variables using discovered naming pattern"""
         try:
-            logger.info("Initializing variables using proven path navigation...")
+            logger.info("Initializing variables using discovered pattern...")
 
-            # Use user's exact pattern from new.py
-            # PATH_TO_VARIABLES = ["0:Objects", "4:new_Controller_0", "4:GlobalVars"]
+            # Navigate using proven method
             current_node = self.client.get_node(ua.ObjectIds.ObjectsFolder)
 
-            # Navigate using user's proven method
             for part in self.variables_path[1:]:  # Skip "0:Objects"
                 try:
                     current_node = await current_node.get_child(part)
@@ -153,7 +161,7 @@ class ProvenAsyncOPCClient:
 
             self.variables_folder = current_node
 
-            # Get all variables using proven pattern
+            # Get all variables
             variables_to_monitor = await self.variables_folder.get_children()
             if not variables_to_monitor:
                 logger.error("Found the folder, but it contains no variables")
@@ -161,7 +169,7 @@ class ProvenAsyncOPCClient:
 
             logger.info(f"Found {len(variables_to_monitor)} variables in GlobalVars")
 
-            # Store all variable nodes by name (user's pattern)
+            # Store all variable nodes by name
             for var_node in variables_to_monitor:
                 try:
                     browse_name = await var_node.read_browse_name()
@@ -171,15 +179,15 @@ class ProvenAsyncOPCClient:
                 except Exception as e:
                     logger.warning(f"Could not read browse name for variable: {e}")
 
-            # Categorize variables for AS/RS system
-            await self._categorize_variables()
+            # Categorize variables using discovered pattern
+            await self._categorize_discovered_variables()
 
             # Report initialization results
             total_vars = len(self.variable_nodes)
             logger.info(f"✅ Initialized {total_vars} variable nodes:")
             logger.info(f"   LEDs: {len(self.led_nodes)}/35")
             logger.info(f"   Buttons: {len(self.button_nodes)}/35") 
-            logger.info(f"   Emergency: {'Yes' if self.kill_node else 'No'}")
+            logger.info(f"   Emergency: {'Yes' if self.home_node else 'No'}")
 
             return True
 
@@ -187,40 +195,69 @@ class ProvenAsyncOPCClient:
             logger.error(f"Failed to initialize variables: {e}")
             raise
 
-    async def _categorize_variables(self):
-        """Categorize variables for AS/RS system"""
+    def _position_id_from_plc_name(self, plc_name: str) -> Optional[int]:
+        """Convert PLC variable name (A1, B2S, etc.) to position ID (1-35)"""
+        try:
+            # Remove 'S' suffix if present
+            base_name = plc_name.rstrip('S')
+
+            if len(base_name) < 2:
+                return None
+
+            row_letter = base_name[0].upper()  # A, B, C, D, E
+            column_str = base_name[1:]         # 1, 2, 3, 4, 5, 6, 7
+
+            if row_letter not in 'ABCDE' or not column_str.isdigit():
+                return None
+
+            row_num = ord(row_letter) - ord('A') + 1  # A=1, B=2, C=3, D=4, E=5
+            column_num = int(column_str)              # 1-7
+
+            if not (1 <= row_num <= 5) or not (1 <= column_num <= 7):
+                return None
+
+            # Calculate position ID: Row 1 = positions 1-7, Row 2 = 8-14, etc.
+            position_id = ((row_num - 1) * 7) + column_num
+
+            return position_id if 1 <= position_id <= 35 else None
+
+        except Exception:
+            return None
+
+    async def _categorize_discovered_variables(self):
+        """Categorize variables using discovered pattern"""
         self.led_nodes.clear()
         self.button_nodes.clear()
-        self.kill_node = None
+        self.home_node = None
 
         for var_name, var_node in self.variable_nodes.items():
             try:
-                # LED variables (led1, led2, ..., led35)
-                if var_name.startswith('led') and var_name[3:].isdigit():
-                    led_num = int(var_name[3:])
-                    if 1 <= led_num <= 35:
-                        self.led_nodes[led_num] = var_node
-                        if led_num <= 3:  # Log first few
-                            logger.debug(f"✅ LED{led_num}: {var_name}")
+                # LED variables (A1S, B2S, etc.)
+                if var_name.endswith('S') and len(var_name) >= 3:
+                    position_id = self._position_id_from_plc_name(var_name)
+                    if position_id:
+                        self.led_nodes[position_id] = var_node
+                        if position_id <= 3:  # Log first few
+                            logger.debug(f"✅ LED{position_id}: {var_name}")
 
-                # Button variables (pb1, pb2, ..., pb35)
-                elif var_name.startswith('pb') and var_name[2:].isdigit():
-                    btn_num = int(var_name[2:])
-                    if 1 <= btn_num <= 35:
-                        self.button_nodes[btn_num] = var_node
-                        if btn_num <= 3:  # Log first few
-                            logger.debug(f"✅ PB{btn_num}: {var_name}")
+                # Button variables (A1, B2, etc.)
+                elif not var_name.endswith('S') and var_name != 'Home':
+                    position_id = self._position_id_from_plc_name(var_name)
+                    if position_id:
+                        self.button_nodes[position_id] = var_node
+                        if position_id <= 3:  # Log first few
+                            logger.debug(f"✅ Button{position_id}: {var_name}")
 
-                # Emergency kill switch
-                elif var_name.lower() in ['kill', 'emergency', 'estop']:
-                    self.kill_node = var_node
+                # Emergency/Home
+                elif var_name == 'Home':
+                    self.home_node = var_node
                     logger.debug(f"✅ Emergency: {var_name}")
 
             except Exception as e:
                 logger.debug(f"Could not categorize variable {var_name}: {e}")
 
     async def read_led_state(self, position_id: int) -> Optional[bool]:
-        """Read LED state using proven get_value() pattern"""
+        """Read LED state using discovered pattern"""
         try:
             if position_id in self.led_nodes:
                 value = await self.led_nodes[position_id].get_value()
@@ -232,7 +269,7 @@ class ProvenAsyncOPCClient:
         return None
 
     async def write_led_state(self, position_id: int, state: bool) -> bool:
-        """Write LED state using proven set_value() pattern"""
+        """Write LED state using discovered pattern"""
         try:
             if position_id in self.led_nodes:
                 await self.led_nodes[position_id].set_value(state)
@@ -245,7 +282,7 @@ class ProvenAsyncOPCClient:
         return False
 
     async def read_button_state(self, position_id: int) -> Optional[bool]:
-        """Read button state using proven pattern"""
+        """Read button state using discovered pattern"""
         try:
             if position_id in self.button_nodes:
                 value = await self.button_nodes[position_id].get_value()
@@ -253,19 +290,19 @@ class ProvenAsyncOPCClient:
                 return bool(value)
         except Exception as e:
             self.error_count += 1
-            logger.debug(f"Error reading PB{position_id}: {e}")
+            logger.debug(f"Error reading Button{position_id}: {e}")
         return None
 
     async def read_emergency_kill(self) -> Optional[bool]:
-        """Read emergency kill switch"""
+        """Read emergency Home switch"""
         try:
-            if self.kill_node:
-                value = await self.kill_node.get_value()
+            if self.home_node:
+                value = await self.home_node.get_value()
                 self.read_count += 1
                 return bool(value)
         except Exception as e:
             self.error_count += 1
-            logger.debug(f"Error reading emergency kill: {e}")
+            logger.debug(f"Error reading Home: {e}")
         return None
 
     async def read_all_states(self) -> Dict[str, Any]:
@@ -279,22 +316,22 @@ class ProvenAsyncOPCClient:
         }
 
         try:
-            # Read LEDs efficiently
-            for pos_id in list(self.led_nodes.keys())[:10]:  # Read first 10 to avoid overwhelming
+            # Read LEDs efficiently (first 10 to avoid overwhelming)
+            for pos_id in list(self.led_nodes.keys())[:10]:
                 led_state = await self.read_led_state(pos_id)
                 if led_state is not None:
                     states["leds"][pos_id] = led_state
 
             # Read buttons efficiently  
-            for pos_id in list(self.button_nodes.keys())[:10]:  # Read first 10
+            for pos_id in list(self.button_nodes.keys())[:10]:
                 button_state = await self.read_button_state(pos_id)
                 if button_state is not None:
                     states["buttons"][pos_id] = button_state
 
-            # Read emergency kill
-            kill_state = await self.read_emergency_kill()
-            if kill_state is not None:
-                states["emergency_kill"] = kill_state
+            # Read emergency Home
+            home_state = await self.read_emergency_kill()
+            if home_state is not None:
+                states["emergency_kill"] = home_state
 
         except Exception as e:
             logger.error(f"Error reading system states: {e}")
@@ -303,14 +340,14 @@ class ProvenAsyncOPCClient:
         return states
 
     async def monitor_variable_changes(self, callback=None):
-        """Monitor all variables for changes using user's proven pattern"""
+        """Monitor all variables for changes"""
         if not self.variable_nodes:
             logger.error("No variables to monitor")
             return
 
         logger.info(f"Starting variable monitoring on {len(self.variable_nodes)} variables...")
 
-        # Read initial states (user's pattern)
+        # Read initial states
         initial_states = {}
         for var_name, var_node in self.variable_nodes.items():
             try:
@@ -321,7 +358,7 @@ class ProvenAsyncOPCClient:
 
         logger.info("Initial state recorded. Monitoring for changes...")
 
-        # Continuous monitoring (user's pattern)
+        # Continuous monitoring
         try:
             while self.connected:
                 for var_name, var_node in self.variable_nodes.items():
@@ -338,7 +375,6 @@ class ProvenAsyncOPCClient:
                             logger.info(f"   Old Value: {old_value}")
                             logger.info(f"   New Value: {new_value}")
 
-                            # Update state and call callback
                             initial_states[var_name] = new_value
 
                             if callback:
@@ -366,11 +402,11 @@ class ProvenAsyncOPCClient:
             "total_variables": len(self.variable_nodes),
             "led_nodes": len(self.led_nodes),
             "button_nodes": len(self.button_nodes),
-            "emergency_node": self.kill_node is not None
+            "emergency_node": self.home_node is not None
         }
 
 class PositionManager:
-    """Enhanced position manager with statistics and validation"""
+    """Position manager with discovered variable pattern"""
 
     def __init__(self, config: Dict[str, Any]):
         self.config = config
@@ -379,25 +415,29 @@ class PositionManager:
         self._initialize_positions()
 
     def _initialize_positions(self):
-        """Initialize all storage positions"""
-        layout = self.config['rack']['layout']
+        """Initialize all storage positions with PLC mapping"""
+        # 5 rows (A-E) × 7 columns (1-7) = 35 positions
+        for row in range(1, 6):  # A=1, B=2, C=3, D=4, E=5
+            for column in range(1, 8):  # 1, 2, 3, 4, 5, 6, 7
+                position_id = ((row - 1) * 7) + column  # 1-35
 
-        for i in range(1, self.config['rack']['positions'] + 1):
-            row = ((i - 1) // layout['columns']) + 1
-            column = ((i - 1) % layout['columns']) + 1
+                self.positions[position_id] = StoragePosition(
+                    id=position_id,
+                    row=row,
+                    column=column,
+                    last_activity=datetime.now()
+                )
 
-            self.positions[i] = StoragePosition(
-                id=i,
-                row=row,
-                column=column,
-                last_activity=datetime.now()
-            )
+        logger.info(f"Initialized {len(self.positions)} storage positions (5×7 grid)")
 
-        logger.info(f"Initialized {len(self.positions)} storage positions ({layout['rows']}×{layout['columns']})")
+        # Log some examples
+        for pos_id in [1, 8, 15, 35]:
+            pos = self.positions[pos_id]
+            logger.debug(f"Position {pos_id}: {pos.plc_button_name}/{pos.plc_led_name} at {pos.grid_location}")
 
     def get_position(self, position_id: int) -> Optional[StoragePosition]:
         """Get position by ID with validation"""
-        if 1 <= position_id <= self.config['rack']['positions']:
+        if 1 <= position_id <= 35:
             return self.positions.get(position_id)
         return None
 
@@ -449,7 +489,7 @@ class PositionManager:
             "timestamp": datetime.now()
         })
 
-        logger.info(f"📦 Stored {product_id} in position {position_id}")
+        logger.info(f"📦 Stored {product_id} in position {position_id} ({position.plc_led_name})")
         return True
 
     def retrieve_item(self, position_id: int) -> Optional[str]:
@@ -480,27 +520,23 @@ class PositionManager:
             "timestamp": datetime.now()
         })
 
-        logger.info(f"📤 Retrieved {product_id} from position {position_id}")
+        logger.info(f"📤 Retrieved {product_id} from position {position_id} ({position.plc_button_name})")
         return product_id
 
     def get_grid_display(self) -> List[List[str]]:
-        """Get visual grid representation"""
-        layout = self.config['rack']['layout']
+        """Get visual grid representation (5×7)"""
         grid = []
 
-        for r in range(1, layout['rows'] + 1):
+        for r in range(1, 6):  # 5 rows (A-E)
             row = []
-            for c in range(1, layout['columns'] + 1):
-                pos_id = ((r - 1) * layout['columns']) + c
+            for c in range(1, 8):  # 7 columns (1-7)
+                pos_id = ((r - 1) * 7) + c  # Calculate position ID
 
-                if pos_id <= self.config['rack']['positions']:
-                    position = self.positions.get(pos_id)
-                    if position and position.status == PositionStatus.OCCUPIED:
-                        row.append(f"[{pos_id:02d}]")  # Occupied
-                    else:
-                        row.append(f" {pos_id:02d} ")   # Empty
+                position = self.positions.get(pos_id)
+                if position and position.status == PositionStatus.OCCUPIED:
+                    row.append(f"[{pos_id:02d}]")  # Occupied
                 else:
-                    row.append("    ")  # No position
+                    row.append(f" {pos_id:02d} ")   # Empty
             grid.append(row)
 
         return grid
@@ -526,7 +562,7 @@ class PositionManager:
             "occupied_positions": occupied,
             "empty_positions": total - occupied,
             "occupancy_percent": int((occupied / total) * 100) if total > 0 else 0,
-            "layout": f"{self.config['rack']['layout']['rows']}×{self.config['rack']['layout']['columns']}",
+            "layout": "5×7",
             "unique_products": len(products),
             "total_operations": len(self.operation_history),
             "recent_activity": [
@@ -546,6 +582,7 @@ class PositionManager:
                 "position_id": pos.id,
                 "position_name": pos.position_name,
                 "grid_location": pos.grid_location,
+                "plc_names": f"{pos.plc_button_name}/{pos.plc_led_name}",
                 "product_id": pos.product_id,
                 "stored_at": pos.stored_at.isoformat() if pos.stored_at else None,
                 "duration": (datetime.now() - pos.stored_at).total_seconds() / 3600 if pos.stored_at else 0
@@ -559,4 +596,4 @@ class PositionManager:
             "summary": self.get_statistics()
         }
 
-print("✅ Core system (proven asyncua): asrs_core.py")
+print("✅ Updated core system with discovered PLC variable pattern")
