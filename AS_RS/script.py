@@ -1,103 +1,49 @@
-# Create the updated configuration for the actual OMRON OPC UA system
+# Create the complete new AS/RS system based on the working asyncua connection
 
-import json
-
-omron_asrs_config = {
+# 1. Configuration file
+asrs_config = {
     "system": {
-        "name": "Auto Rack35 AS/RS - OMRON NX102-9000",
-        "type": "AUTOMATED_STORAGE_RETRIEVAL",
-        "description": "35-position AS/RS with LED indicators and push button controls",
-        "version": "2.0",
-        "plc_model": "OMRON NX102-9000"
+        "name": "BVM Auto Rack35 AS/RS Control System",
+        "version": "3.0",
+        "plc_model": "OMRON NX102-9000",
+        "description": "35-position AS/RS with asyncua connection"
     },
-    "communication": {
-        "protocol": "OPC_UA",
-        "endpoint": "opc.tcp://10.10.14.113:4840",  # Update with your PLC IP
-        "namespace": 4,
-        "timeout": 5.0,
-        "retry_count": 3,
-        "retry_delay": 1.0
+    "plc": {
+        "ip": "10.10.14.104",
+        "url": "opc.tcp://10.10.14.104:4840",
+        "timeout": 10,
+        "retry_count": 3
     },
-    "storage_rack": {
-        "total_positions": 35,
-        "layout": {
-            "rows": 7,        # 7 rows of 5 positions each (7×5=35)
-            "columns": 5,     # Or adjust based on your physical layout
-            "description": "35-position storage rack with individual LED/PB control"
-        },
-        "positions": {
-            # This will be automatically generated for positions 1-35
-            "position_template": {
-                "led_node": "ns=4;s=led{position}",
-                "pushbutton_node": "ns=4;s=pb{position}",
-                "description": "Storage position {position}"
-            }
+    "paths": {
+        "base_path": ["0:Objects", "4:new_Controller_0"],
+        "variables_folder": "4:GlobalVars",
+        "full_path": ["0:Objects", "4:new_Controller_0", "4:GlobalVars"]
+    },
+    "rack": {
+        "positions": 35,
+        "layout": {"rows": 7, "columns": 5},
+        "variables": {
+            "leds": ["led1", "led2", "led3", "led4", "led5", "led6", "led7", "led8", "led9", "led10",
+                    "led11", "led12", "led13", "led14", "led15", "led16", "led17", "led18", "led19", "led20",
+                    "led21", "led22", "led23", "led24", "led25", "led26", "led27", "led28", "led29", "led30",
+                    "led31", "led32", "led33", "led34", "led35"],
+            "buttons": ["pb1", "pb2", "pb3", "pb4", "pb5", "pb6", "pb7", "pb8", "pb9", "pb10",
+                       "pb11", "pb12", "pb13", "pb14", "pb15", "pb16", "pb17", "pb18", "pb19", "pb20",
+                       "pb21", "pb22", "pb23", "pb24", "pb25", "pb26", "pb27", "pb28", "pb29", "pb30",
+                       "pb31", "pb32", "pb33", "pb34", "pb35"],
+            "emergency": "kill"
         }
     },
-    "control_nodes": {
-        "emergency_kill": "ns=4;s=kill",
-        "system_status": "ns=4;s=system_status",  # Add if available
-        "system_mode": "ns=4;s=system_mode",      # Add if available
-        "alarm_status": "ns=4;s=alarm_status"     # Add if available
-    },
-    "operations": {
-        "led_control": {
-            "off": False,
-            "on": True,
-            "blink_pattern": "custom"  # If supported
-        },
-        "position_assignment": {
-            "strategy": "SEQUENTIAL",  # SEQUENTIAL, RANDOM, OPTIMIZED
-            "start_position": 1,
-            "end_position": 35
-        },
-        "safety": {
-            "emergency_stop_monitoring": True,
-            "led_status_validation": True,
-            "position_conflict_detection": True
-        }
-    },
-    "visual_feedback": {
-        "led_states": {
-            "empty": {"value": False, "description": "Position empty"},
-            "occupied": {"value": True, "description": "Position occupied"},
-            "reserved": {"blink": True, "description": "Position reserved for incoming item"}
-        },
-        "status_display": {
-            "show_position_map": True,
-            "show_led_states": True,
-            "show_occupancy_stats": True
-        }
+    "operation": {
+        "scan_interval": 0.5,
+        "command_timeout": 5.0,
+        "auto_led_update": True,
+        "button_debounce": 0.2
     }
 }
 
-# Generate specific position configurations
-positions = {}
-for i in range(1, 36):  # Positions 1-35
-    positions[f"position_{i:02d}"] = {
-        "id": i,
-        "name": f"Position {i}",
-        "led_node": f"ns=4;s=led{i}",
-        "pushbutton_node": f"ns=4;s=pb{i}",
-        "row": ((i - 1) // 5) + 1,      # Calculate row (1-7)
-        "column": ((i - 1) % 5) + 1,    # Calculate column (1-5)
-        "occupied": False,
-        "product_id": None,
-        "stored_at": None
-    }
+import json
+with open('asrs_config.json', 'w') as f:
+    json.dump(asrs_config, f, indent=2)
 
-omron_asrs_config["storage_positions"] = positions
-
-# Save the updated configuration
-with open('omron_asrs_config.json', 'w') as f:
-    json.dump(omron_asrs_config, f, indent=2)
-
-print("✅ OMRON AS/RS Configuration created: omron_asrs_config.json")
-print(f"\n🏗️ Auto Rack35 OMRON NX102-9000 Configuration:")
-print(f"📋 Total Positions: {omron_asrs_config['storage_rack']['total_positions']}")
-print(f"🔌 Protocol: {omron_asrs_config['communication']['protocol']}")
-print(f"🏭 PLC Model: {omron_asrs_config['system']['plc_model']}")
-print(f"📍 Layout: {omron_asrs_config['storage_rack']['layout']['rows']} rows × {omron_asrs_config['storage_rack']['layout']['columns']} columns")
-print(f"💡 LED Control: led1-led35")
-print(f"🔘 Push Buttons: pb1-pb35") 
-print(f"🚨 Emergency Kill: {omron_asrs_config['control_nodes']['emergency_kill']}")
+print("✅ Configuration file created: asrs_config.json")
