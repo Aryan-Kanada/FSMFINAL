@@ -1,20 +1,32 @@
-# BVM AS/RS System Requirements
-# Python packages for async OPC UA communication
+# BVM AS/RS System Requirements - Proven Asyncua Pattern
+# Python packages for async OPC UA communication using your working pattern
 
-# Core OPC UA Communication
+# Core OPC UA Communication (async - matches your working code)
 asyncua>=0.9.0
 
 # Standard libraries (included with Python):
-# - asyncio
-# - json
-# - logging
-# - dataclasses
-# - typing
-# - enum
-# - datetime
-# - time
-# - sys
+# - asyncio          # For async/await patterns (matches your code)
+# - json            # Configuration files
+# - logging         # System logging
+# - dataclasses     # Data structures
+# - typing          # Type hints
+# - enum            # Enumerations
+# - datetime        # Time handling
+# - time            # Timing functions
+# - sys             # System functions
 
 # Optional for development:
 # pytest>=6.0.0     # For testing
 # black>=21.0.0     # Code formatting
+
+# Note: This system uses the asynchronous 'asyncua' library
+# exactly matching your proven working code pattern from:
+# - plc_monitor.py
+# - new.py 
+# - discover_path.py
+
+# Your proven connection pattern:
+# async with Client(url=PLC_URL) as client:
+#     current_node = client.get_objects_node()
+#     for part in PATH[1:]:
+#         current_node = await current_node.get_child(part)

@@ -1,23 +1,23 @@
 {
   "system": {
     "name": "BVM Auto Rack35 AS/RS Control System",
-    "version": "3.0",
+    "version": "4.0",
     "plc_model": "OMRON NX102-9000",
-    "description": "35-position AS/RS with asyncua connection"
+    "description": "35-position AS/RS with proven asyncua connection"
   },
   "plc": {
     "ip": "10.10.14.104",
     "url": "opc.tcp://10.10.14.104:4840",
-    "timeout": 10,
-    "retry_count": 3
+    "timeout": 10000,
+    "retry_count": 3,
+    "retry_delay": 2.0
   },
   "paths": {
-    "base_path": [
+    "known_path": [
       "0:Objects",
       "4:new_Controller_0"
     ],
-    "variables_folder": "4:GlobalVars",
-    "full_path": [
+    "variables_path": [
       "0:Objects",
       "4:new_Controller_0",
       "4:GlobalVars"
@@ -109,8 +109,14 @@
   },
   "operation": {
     "scan_interval": 0.5,
-    "command_timeout": 5.0,
+    "command_timeout": 10.0,
     "auto_led_update": true,
-    "button_debounce": 0.2
+    "button_debounce": 0.3,
+    "max_retries": 3
+  },
+  "display": {
+    "auto_refresh_grid": true,
+    "refresh_interval": 30,
+    "show_timestamps": true
   }
 }

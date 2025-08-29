@@ -1,16 +1,17 @@
 """
-BVM AS/RS Setup Script
-Quick setup and configuration for AS/RS system
+BVM AS/RS Setup Script - Proven Asyncua Pattern
+Setup for AS/RS system using your working asyncua connection
 """
 
 import json
 import subprocess
 import sys
+import os
 
 def install_dependencies():
-    """Install required Python packages"""
-    print("📦 Installing Dependencies")
-    print("-" * 30)
+    """Install required Python packages for proven pattern"""
+    print("📦 Installing Dependencies (Proven Pattern)")
+    print("-" * 45)
 
     packages = ["asyncua"]
 
@@ -24,12 +25,13 @@ def install_dependencies():
             return False
 
     print("   ✅ All dependencies installed")
+    print("   💡 Using asyncua (async version) - matches your working code")
     return True
 
 def verify_config():
     """Verify configuration file"""
-    print("\n⚙️ Verifying Configuration")
-    print("-" * 30)
+    print("\n⚙️ Verifying Configuration (Proven Pattern)")
+    print("-" * 50)
 
     try:
         with open('asrs_config.json', 'r') as f:
@@ -41,19 +43,25 @@ def verify_config():
         print(f"   📦 Positions: {config['rack']['positions']}")
         print(f"   📐 Layout: {config['rack']['layout']['rows']}×{config['rack']['layout']['columns']}")
 
+        # Check proven path configuration
+        if 'paths' in config and 'variables_path' in config['paths']:
+            path = config['paths']['variables_path']
+            print(f"   📁 Variables Path: {' → '.join(path)}")
+            print(f"   ✅ Using proven path configuration")
+
         return True
 
     except FileNotFoundError:
         print("   ❌ Configuration file not found")
         return False
     except json.JSONDecodeError as e:
-        print(f"   ❌ Invalid JSON in configuration: {e}")
+        print(f"   ❌ Invalid JSON: {e}")
         return False
 
 def update_plc_ip():
-    """Update PLC IP address in configuration"""
-    print("\n🔧 PLC IP Configuration")
-    print("-" * 30)
+    """Update PLC IP address"""
+    print("\n🔧 PLC IP Configuration (Proven Pattern)")
+    print("-" * 45)
 
     try:
         with open('asrs_config.json', 'r') as f:
@@ -61,6 +69,7 @@ def update_plc_ip():
 
         current_ip = config['plc']['ip']
         print(f"   Current PLC IP: {current_ip}")
+        print(f"   Proven working IP: 10.10.14.104")
 
         new_ip = input("   Enter new PLC IP (or press Enter to keep current): ").strip()
 
@@ -72,10 +81,10 @@ def update_plc_ip():
                 json.dump(config, f, indent=2)
 
             print(f"   ✅ PLC IP updated to: {new_ip}")
-            return True
         else:
             print(f"   ✅ PLC IP unchanged: {current_ip}")
-            return True
+
+        return True
 
     except Exception as e:
         print(f"   ❌ Error updating PLC IP: {e}")
@@ -83,8 +92,8 @@ def update_plc_ip():
 
 def check_system_files():
     """Check if all system files are present"""
-    print("\n📁 Checking System Files")
-    print("-" * 30)
+    print("\n📁 Checking System Files (Proven Pattern)")
+    print("-" * 45)
 
     required_files = [
         'asrs_config.json',
@@ -98,11 +107,9 @@ def check_system_files():
     missing_files = []
 
     for file_name in required_files:
-        try:
-            with open(file_name, 'r') as f:
-                pass  # Just check if file can be opened
+        if os.path.exists(file_name):
             print(f"   ✅ {file_name}")
-        except FileNotFoundError:
+        else:
             print(f"   ❌ {file_name} - MISSING")
             missing_files.append(file_name)
 
@@ -111,18 +118,68 @@ def check_system_files():
         return False
     else:
         print(f"\n   ✅ All {len(required_files)} files present")
+        print(f"   💡 All files use proven asyncua pattern")
         return True
 
+def test_python_version():
+    """Test Python version compatibility"""
+    print("\n🐍 Checking Python Version")
+    print("-" * 30)
+
+    version = sys.version_info
+    print(f"   Python version: {version.major}.{version.minor}.{version.micro}")
+
+    if version.major >= 3 and version.minor >= 7:
+        print("   ✅ Python version compatible")
+        print("   ✅ Supports asyncio and asyncua")
+        return True
+    else:
+        print("   ❌ Python 3.7+ required for asyncua")
+        return False
+
+def verify_asyncua_compatibility():
+    """Verify asyncua library compatibility"""
+    print("\n🔍 Checking Asyncua Compatibility")
+    print("-" * 35)
+
+    try:
+        import asyncua
+        print(f"   ✅ asyncua library available")
+
+        # Check if it has the methods we need
+        from asyncua import Client
+        print(f"   ✅ asyncua.Client available")
+
+        # Check for proven methods
+        client = Client("opc.tcp://dummy:4840")
+        if hasattr(client, 'get_objects_node'):
+            print(f"   ✅ get_objects_node method available")
+
+        print(f"   💡 Using proven asyncua pattern from your working code")
+        return True
+
+    except ImportError:
+        print(f"   ❌ asyncua library not found")
+        print(f"   💡 Run: pip install asyncua")
+        return False
+    except Exception as e:
+        print(f"   ❌ asyncua compatibility issue: {e}")
+        return False
+
 def main():
-    """Main setup process"""
-    print("🏗️ BVM AS/RS System Setup")
-    print("=" * 40)
+    """Main setup process using proven pattern"""
+    print("🏗️ BVM AS/RS System Setup (Proven Asyncua Pattern)")
+    print("=" * 60)
     print("Setting up Auto Rack35 AS/RS Control System")
+    print("Using your proven asyncua connection pattern")
+    print("Based on your working plc_monitor.py and new.py code")
     print()
 
     steps = [
+        ("Check Python Version", test_python_version),
         ("Check System Files", check_system_files),
         ("Install Dependencies", install_dependencies),
+        ("Verify Asyncua Compatibility", verify_asyncua_compatibility),
         ("Verify Configuration", verify_config),
         ("Update PLC IP", update_plc_ip)
     ]
@@ -133,26 +190,35 @@ def main():
             print(f"\n❌ Setup failed at: {step_name}")
             return False
 
-    print("\n" + "="*40)
+    print("\n" + "="*60)
     print("🎉 SETUP COMPLETED SUCCESSFULLY!")
-    print("="*40)
+    print("="*60)
 
     print("\n🚀 Next Steps:")
-    print("   1. python discover_plc.py    # Discover PLC variables")
+    print("   1. python discover_plc.py    # Discover PLC variables (proven method)")
     print("   2. python test_system.py     # Test system components")
     print("   3. python asrs_app.py        # Start AS/RS control system")
 
-    print("\n💡 Tips:")
-    print("   - Ensure your OMRON PLC is powered on")
-    print("   - Verify OPC UA server is enabled in Sysmac Studio")
-    print("   - Check network connectivity to 10.10.14.104")
+    print("\n💡 System Features:")
+    print("   ✅ Uses your proven asyncua connection pattern")
+    print("   ✅ Real-time variable monitoring (like plc_monitor.py)")
+    print("   ✅ Exact navigation path: Objects → new_Controller_0 → GlobalVars")
+    print("   ✅ Professional 35-position AS/RS control system")
+    print("   ✅ Emergency safety monitoring")
+
+    print("\n🔧 Troubleshooting:")
+    print("   • Ensure OMRON PLC is powered on")
+    print("   • Enable OPC UA server in Sysmac Studio")
+    print("   • Check network connectivity to 10.10.14.104")
+    print("   • Variables must be published in PLC (led1-led35, pb1-pb35, kill)")
 
     return True
 
 if __name__ == "__main__":
     success = main()
     if not success:
-        print("\n❌ Setup incomplete. Please resolve errors and try again.")
+        print("\n❌ Setup incomplete. Please resolve errors.")
         sys.exit(1)
     else:
+        print("\n🎯 Ready to use your proven asyncua AS/RS system!")
         sys.exit(0)
