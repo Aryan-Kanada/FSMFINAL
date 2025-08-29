@@ -11,9 +11,9 @@ def setup_configuration():
     print("=" * 50)
 
     # Get PLC IP
-    plc_ip = input("\nPLC IP Address (default 10.10.14.113): ").strip()
+    plc_ip = input("\nPLC IP Address (default 10.10.14.104): ").strip()
     if not plc_ip:
-        plc_ip = "10.10.14.113"
+        plc_ip = "10.10.14.104"
 
     endpoint = f"opc.tcp://{plc_ip}:4840"
 
