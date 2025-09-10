@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Store - Premium Products</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="nav-brand">
+                    <i class="fas fa-store"></i>
+                    <span>Inventory Store</span>
+                </div>
+                <div class="nav-menu">
+                    <a href="#products" class="nav-link">Products</a>
+                    <a href="#about" class="nav-link">About</a>
+                    <a href="#contact" class="nav-link">Contact</a>
+                    <div class="cart-icon" id="cartIcon">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Premium Products for Your Needs</h1>
+                <p class="hero-subtitle">Discover our carefully curated collection of high-quality items with unmatched craftsmanship, reliability, and innovative design that exceeds expectations</p>
+                <a href="#products" class="btn-primary">
+                    <i class="fas fa-rocket"></i>
+                    Explore Collection
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="products">
+        <div class="container">
+            <h2 class="section-title">Featured Products</h2>
+            <p class="section-subtitle">Premium quality items handpicked for excellence</p>
+            <div class="products-grid" id="productsGrid">
+                <!-- Products will be loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Shopping Cart</h3>
+            <button class="cart-close" id="cartClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items will be added here -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total: ₹<span id="cartTotal">0.00</span></span>
+            </div>
+            <button class="btn-primary btn-checkout" id="checkoutBtn">
+                <i class="fas fa-credit-card"></i>
+                Place Order
+            </button>
+        </div>
+    </div>
+
+    <!-- Order Modal -->
+    <div class="modal-overlay" id="orderModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Complete Your Order</h3>
+                <button class="modal-close" id="modalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="orderForm">
+                    <div class="form-group">
+                        <label for="customerName">Full Name *</label>
+                        <input type="text" id="customerName" name="customerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customerEmail">Email *</label>
+                        <input type="email" id="customerEmail" name="customerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customerPhone">Phone *</label>
+                        <input type="tel" id="customerPhone" name="customerPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="shippingAddress">Shipping Address *</label>
+                        <textarea id="shippingAddress" name="shippingAddress" rows="3" required></textarea>
+                    </div>
+                    <div class="order-summary">
+                        <h4>Order Summary</h4>
+                        <div id="orderSummary"></div>
+                        <div class="order-total">
+                            <strong>Total: ₹<span id="orderTotal">0.00</span></strong>
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" id="cancelOrder">Cancel</button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-check"></i>
+                            Confirm Order
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal modal-success">
+            <div class="modal-header">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3>Order Placed Successfully!</h3>
+            </div>
+            <div class="modal-body">
+                <p>Thank you for your order. Your order ID is: <strong id="orderIdDisplay"></strong></p>
+                <p>We'll send you a confirmation email shortly.</p>
+                <button class="btn-primary" id="successClose">Continue Shopping</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="js/app-new.js"></script>
+</body>
+</html>

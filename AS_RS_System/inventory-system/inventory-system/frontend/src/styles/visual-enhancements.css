@@ -1,0 +1,108 @@
+/* visual-enhancements.css - Additional styling for professional appearance */
+
+/* Add subtle border to distinguish rows better */
+tr:not(:last-child) {
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+/* Improve table hover state */
+tr:hover {
+  background-color: rgba(79, 195, 247, 0.05) !important; /* Very subtle accent color highlighting */
+}
+
+/* Better header styling */
+th {
+  border-bottom: 2px solid var(--border-color) !important;
+  background-color: #f8f9fa !important;
+  color: var(--primary-color) !important;
+  font-weight: 600 !important;
+}
+
+/* Professional status indicators */
+.status-badge {
+  display: inline-block;
+  padding: 2px 6px !important;
+  border-radius: 3px !important;
+  font-weight: 600 !important;
+  font-size: 11px !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+}
+
+/* Status badges styled in compact-enhanced.css */
+
+/* Better action badges */
+.action-badge {
+  border-radius: 3px !important;
+  font-size: 11px !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+  font-weight: 600 !important;
+}
+
+.action-badge.added {
+  background-color: rgba(46, 125, 50, 0.15) !important;
+  color: #2e7d32 !important;
+}
+
+.action-badge.retrieved {
+  background-color: rgba(249, 168, 37, 0.15) !important;
+  color: #f57c00 !important;
+}
+
+/* Better table container styling */
+.box-table-container,
+.item-table-container,
+.subcom-table-container,
+.transaction-table-container {
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-sm) !important;
+  border: 1px solid var(--border-color) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Enhanced item container styling for professional, compact appearance */
+.item-table-container {
+  max-width: 820px !important;
+  margin: 12px auto !important;
+  background: white !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Selected row styling */
+tr.selected {
+  background-color: rgba(79, 195, 247, 0.1) !important;
+}
+
+/* Add subtle animation to button hover */
+button:hover {
+  transform: translateY(-1px) !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Better control panel styling */
+.control-panel {
+  background-color: #f8f9fa !important;
+  border: 1px solid #e9ecef !important;
+}
+
+/* Improve tab styling */
+.tabs {
+  gap: 4px !important;
+}
+
+.tabs button.active {
+  color: var(--primary-color) !important;
+  font-weight: 600 !important;
+}
+
+/* Improved form field focus state */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.1) !important;
+}

@@ -1,0 +1,185 @@
+/* responsive.css - Responsive styles for the Inventory Management System */
+
+/* Breakpoint Variables
+   xs: 0-575px (phones)
+   sm: 576-767px (large phones, small tablets)
+   md: 768-991px (tablets)
+   lg: 992-1199px (desktops)
+   xl: 1200px+ (large desktops)
+*/
+
+/* Base responsive container adjustments */
+.dashboard {
+  width: 100%;
+  padding: var(--spacing-lg);
+}
+
+@media (min-width: 576px) {
+  .dashboard {
+    padding: var(--spacing-xl);
+  }
+}
+
+/* Typography responsive adjustments */
+@media (max-width: 767px) {
+  h1 {
+    font-size: 22px;
+  }
+  
+  h2 {
+    font-size: 20px;
+  }
+  
+  h3 {
+    font-size: 18px;
+  }
+  
+  body {
+    font-size: 15px;
+  }
+}
+
+/* Form responsive adjustments */
+@media (max-width: 767px) {
+  .add-box-form,
+  .add-item-form,
+  .add-subcom-form {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-group label {
+    font-size: 14px;
+  }
+}
+
+/* Table responsive handling */
+@media (max-width: 991px) {
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  th, td {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+}
+
+@media (max-width: 575px) {
+  .action-buttons {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+  
+  .action-buttons button {
+    width: 100%;
+  }
+  
+  th, td {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 14px;
+  }
+}
+
+/* Navigation tabs responsive */
+@media (max-width: 767px) {
+  .tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+  
+  .tabs button {
+    padding: var(--spacing-md) var(--spacing-lg);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  
+  .tab-content {
+    padding: var(--spacing-md);
+  }
+}
+
+/* Control panels responsive */
+@media (max-width: 767px) {
+  .transaction-controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .sort-control, .refresh-control {
+    width: 100%;
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .operations-buttons {
+    flex-direction: column;
+  }
+}
+
+/* Helper classes for responsive design */
+.hide-xs {
+  display: none;
+}
+
+@media (min-width: 576px) {
+  .hide-xs {
+    display: initial;
+  }
+  
+  .show-xs {
+    display: none;
+  }
+}
+
+.hide-sm {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .hide-sm {
+    display: initial;
+  }
+  
+  .show-sm {
+    display: none;
+  }
+}
+
+/* Touch optimizations for mobile */
+@media (max-width: 991px) {
+  button, 
+  .tabs button,
+  .form-group input,
+  .form-group select {
+    min-height: 44px; /* Minimum touch target size */
+  }
+  
+  .action-buttons button {
+    min-height: 36px;
+  }
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white;
+    font-size: 12pt;
+  }
+  
+  .dashboard-header,
+  .tabs,
+  button:not(.print-button),
+  .control-panel {
+    display: none;
+  }
+  
+  .tab-content {
+    box-shadow: none;
+    padding: 0;
+  }
+  
+  table {
+    border: 1px solid #ddd;
+  }
+}

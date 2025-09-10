@@ -1,0 +1,41 @@
+{
+  "name": "inventory-reports-generator",
+  "version": "1.0.0",
+  "description": "Inventory Management System Report Generator",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "demo": "node demo.js",
+    "cli": "node cli.js",
+    "generate:daily": "node cli.js daily",
+    "generate:weekly": "node cli.js weekly",
+    "generate:monthly": "node cli.js monthly",
+    "generate:all": "node cli.js all",
+    "install-deps": "npm install",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "inventory",
+    "reports",
+    "csv",
+    "pdf",
+    "analytics"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "csv-writer": "^1.6.0",
+    "dotenv": "^16.0.0",
+    "express": "^4.18.2",
+    "fs-extra": "^11.1.1",
+    "handlebars": "^4.7.8",
+    "moment": "^2.29.4",
+    "mysql2": "^3.3.0",
+    "puppeteer": "^24.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}

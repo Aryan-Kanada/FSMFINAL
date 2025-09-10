@@ -1,0 +1,107 @@
+/* optimized-dashboard.css - Better usage of screen real estate */
+
+/* Make the dashboard layout more efficient but not full width */
+.dashboard {
+  max-width: 1100px !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
+}
+
+/* Adjust tab content padding for better space usage */
+.tab-content {
+  padding: 16px !important;
+}
+
+/* Reduce unnecessary spacing throughout the app */
+.add-box-form, 
+.add-item-form, 
+.add-subcom-form {
+  gap: 14px !important;
+  margin-bottom: 14px !important;
+}
+
+.form-group {
+  margin-bottom: 14px !important;
+}
+
+.form-group label {
+  margin-bottom: 3px !important;
+  font-size: 13px !important;
+}
+
+/* Make tables more compact but still readable */
+table {
+  margin-top: 0 !important;
+}
+
+/* Fix sizing for action buttons in tables */
+.action-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.action-buttons button {
+  padding: 3px 8px !important;
+  height: auto !important;
+  min-height: 22px !important;
+}
+
+/* Make buttons more compact */
+button {
+  padding: 6px 10px !important;
+  font-size: 13px !important;
+}
+
+.tabs button {
+  padding: 8px 14px !important;
+}
+
+/* Add some breathing room between tables and controls */
+.control-panel + div {
+  margin-top: 8px !important;
+}
+
+/* Ensure better readability with proper line heights */
+td, th {
+  line-height: 1.3 !important;
+}
+
+/* Improve spacing within containers */
+.box-table-container,
+.item-table-container,
+.subcom-table-container,
+.transaction-table-container {
+  margin-top: 8px !important;
+}
+
+/* Specific optimization for item container */
+.item-table-container {
+  max-width: 780px !important;
+  margin: 8px auto !important;
+  border-radius: 8px !important;
+  border: 1px solid #e9ecef !important;
+}
+
+/* Optimize operation panels */
+.operations-buttons {
+  margin-bottom: 12px !important;
+}
+
+.operations-buttons button {
+  padding: 8px 12px !important;
+}
+
+.operation-form {
+  padding: 14px !important;
+}
+
+/* Better spacing for header and content */
+.dashboard-header h1 {
+  font-size: 22px !important;
+}
+
+/* Reduce heading sizes for better vertical space usage */
+h2 {
+  font-size: 18px !important;
+  margin-bottom: 12px !important;
+}

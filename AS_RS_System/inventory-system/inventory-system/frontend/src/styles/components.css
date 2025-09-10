@@ -1,0 +1,490 @@
+/* components.css - Component-specific styles for the Inventory Management System */
+
+/* Card Component */
+.card {
+  background-color: var(--card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-lg);
+  transition: all var(--transition-normal);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.card-title {
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--primary-color);
+  margin: 0;
+}
+
+.card-body {
+  padding: var(--spacing-sm) 0;
+}
+
+.card-footer {
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
+}
+
+/* Button Variants */
+.btn {
+  cursor: pointer;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-primary);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: var(--light-text);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+}
+
+.btn-secondary {
+  background-color: var(--secondary-color);
+  color: var(--light-text);
+}
+
+.btn-secondary:hover {
+  background-color: var(--secondary-dark);
+}
+
+.btn-accent {
+  background-color: var(--accent-color);
+  color: var(--dark-text);
+}
+
+.btn-accent:hover {
+  background-color: var(--accent-dark);
+}
+
+.btn-success {
+  background-color: var(--success-color);
+  color: var(--light-text);
+}
+
+.btn-success:hover {
+  background-color: var(--success-light);
+}
+
+.btn-error {
+  background-color: var(--error-color);
+  color: var(--light-text);
+}
+
+.btn-error:hover {
+  background-color: var(--error-light);
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--dark-text);
+}
+
+.btn-outline:hover {
+  background-color: var(--light-bg);
+}
+
+.btn-sm {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 12px;
+}
+
+.btn-lg {
+  padding: var(--spacing-lg) var(--spacing-xl);
+  font-size: 16px;
+}
+
+.btn-icon {
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Float Label Form Fields */
+.float-label {
+  position: relative;
+  margin-bottom: var(--spacing-lg);
+}
+
+.float-label input,
+.float-label select,
+.float-label textarea {
+  width: 100%;
+  height: 56px;
+  padding: var(--spacing-lg) var(--spacing-md) var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 16px;
+  transition: all var(--transition-normal);
+}
+
+.float-label label {
+  position: absolute;
+  left: var(--spacing-md);
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: transparent;
+  padding: 0 var(--spacing-xs);
+  font-size: 16px;
+  color: var(--medium-text);
+  pointer-events: none;
+  transition: all var(--transition-normal);
+}
+
+.float-label input:focus,
+.float-label select:focus,
+.float-label textarea:focus,
+.float-label input:not(:placeholder-shown),
+.float-label select:not(:placeholder-shown),
+.float-label textarea:not(:placeholder-shown) {
+  border-color: var(--accent-color);
+  padding-top: var(--spacing-xl);
+}
+
+.float-label input:focus ~ label,
+.float-label select:focus ~ label,
+.float-label textarea:focus ~ label,
+.float-label input:not(:placeholder-shown) ~ label,
+.float-label select:not(:placeholder-shown) ~ label,
+.float-label textarea:not(:placeholder-shown) ~ label {
+  top: 20%;
+  font-size: 12px;
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+/* Badge Component */
+.badge {
+  display: inline-block;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-primary {
+  background-color: var(--primary-color);
+  color: var(--light-text);
+}
+
+.badge-secondary {
+  background-color: var(--secondary-color);
+  color: var(--light-text);
+}
+
+.badge-success {
+  background-color: var(--success-color);
+  color: var(--light-text);
+}
+
+.badge-error {
+  background-color: var(--error-color);
+  color: var(--light-text);
+}
+
+.badge-warning {
+  background-color: var(--warning-color);
+  color: var(--dark-text);
+}
+
+.badge-info {
+  background-color: var(--info-color);
+  color: var(--light-text);
+}
+
+/* Alert Component */
+.alert {
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+}
+
+.alert-success {
+  background-color: rgba(46, 125, 50, 0.1);
+  border-left: 4px solid var(--success-color);
+}
+
+.alert-error {
+  background-color: rgba(211, 47, 47, 0.1);
+  border-left: 4px solid var(--error-color);
+}
+
+.alert-warning {
+  background-color: rgba(249, 168, 37, 0.1);
+  border-left: 4px solid var(--warning-color);
+}
+
+.alert-info {
+  background-color: rgba(2, 136, 209, 0.1);
+  border-left: 4px solid var(--info-color);
+}
+
+.alert-title {
+  font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+  font-size: 16px;
+}
+
+.alert-content {
+  flex-grow: 1;
+}
+
+.alert-icon {
+  flex-shrink: 0;
+}
+
+.alert-close {
+  background: none;
+  border: none;
+  color: var(--medium-text);
+  cursor: pointer;
+  padding: 0;
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* Skeleton Loading Components */
+.skeleton-line {
+  height: 16px;
+  margin-bottom: var(--spacing-sm);
+  background: linear-gradient(90deg, var(--light-bg) 25%, var(--table-row-even) 50%, var(--light-bg) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+.skeleton-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, var(--light-bg) 25%, var(--table-row-even) 50%, var(--light-bg) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-rectangle {
+  width: 100%;
+  height: 120px;
+  margin-bottom: var(--spacing-md);
+  background: linear-gradient(90deg, var(--light-bg) 25%, var(--table-row-even) 50%, var(--light-bg) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+/* Toast Customization for react-toastify */
+.Toastify__toast {
+  border-radius: var(--radius-md) !important;
+  font-family: var(--font-secondary) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.Toastify__toast-theme--light {
+  background-color: var(--card-bg) !important;
+  color: var(--dark-text) !important;
+}
+
+.Toastify__toast--success {
+  border-left: 4px solid var(--success-color) !important;
+}
+
+.Toastify__toast--error {
+  border-left: 4px solid var(--error-color) !important;
+}
+
+.Toastify__toast--warning {
+  border-left: 4px solid var(--warning-color) !important;
+}
+
+.Toastify__toast--info {
+  border-left: 4px solid var(--info-color) !important;
+}
+
+.Toastify__progress-bar {
+  height: 3px !important;
+}
+
+.Toastify__progress-bar--success {
+  background-color: var(--success-color) !important;
+}
+
+.Toastify__progress-bar--error {
+  background-color: var(--error-color) !important;
+}
+
+.Toastify__progress-bar--warning {
+  background-color: var(--warning-color) !important;
+}
+
+.Toastify__progress-bar--info {
+  background-color: var(--info-color) !important;
+}
+
+/* Pagination Component */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--spacing-xl);
+  gap: var(--spacing-sm);
+}
+
+.pagination-item {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  user-select: none;
+}
+
+.pagination-item:hover {
+  background-color: var(--hover-bg);
+}
+
+.pagination-item.active {
+  background-color: var(--primary-color);
+  color: var(--light-text);
+}
+
+.pagination-item.disabled {
+  color: var(--disabled-text);
+  cursor: not-allowed;
+}
+
+/* Tabs Component */
+.custom-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: var(--spacing-lg);
+}
+
+.custom-tab {
+  padding: var(--spacing-md) var(--spacing-lg);
+  background-color: transparent;
+  color: var(--medium-text);
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-right: var(--spacing-md);
+  font-weight: 500;
+  transition: all var(--transition-normal);
+  position: relative;
+  cursor: pointer;
+}
+
+.custom-tab:hover {
+  color: var(--primary-color);
+}
+
+.custom-tab.active {
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--primary-color);
+  font-weight: 600;
+}
+
+/* Dropdown Component */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: var(--z-dropdown);
+  min-width: 180px;
+  background-color: var(--card-bg);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: var(--spacing-sm) 0;
+  margin-top: var(--spacing-xs);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all var(--transition-normal);
+}
+
+.dropdown.open .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-item {
+  padding: var(--spacing-md) var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  color: var(--dark-text);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.dropdown-item:hover {
+  background-color: var(--hover-bg);
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: var(--spacing-xs) 0;
+}

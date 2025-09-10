@@ -1,0 +1,147 @@
+/* layout-compact.css - Comprehensive layout improvements for compact professional design */
+
+/* Reduce overall spacing for more compact layout */
+:root {
+  --spacing-md: 12px;
+  --spacing-lg: 18px;
+  --spacing-xl: 24px;
+}
+
+/* Make dashboard more compact */
+.dashboard {
+  padding: var(--spacing-md) !important;
+  max-width: 1300px !important;
+}
+
+/* Streamline header */
+.dashboard-header {
+  margin-bottom: var(--spacing-md) !important;
+  padding-bottom: 16px !important;
+}
+
+.dashboard-header h1 {
+  font-size: 24px !important;
+}
+
+/* Compact tabs navigation */
+.tabs {
+  margin-bottom: var(--spacing-lg) !important;
+}
+
+.tabs button {
+  padding: 10px 18px !important;
+  font-size: 14px !important;
+}
+
+/* Make tab content more compact */
+.tab-content {
+  padding: var(--spacing-lg) !important;
+  min-height: unset !important;
+}
+
+/* Reduce form spacing */
+.form-group {
+  margin-bottom: var(--spacing-md) !important;
+}
+
+.form-group label {
+  margin-bottom: 4px !important;
+  font-size: 13px !important;
+}
+
+.form-group input, .form-group select, .form-group textarea {
+  padding: 8px 12px !important;
+  font-size: 14px !important;
+}
+
+/* Optimize control panel */
+.control-panel {
+  margin-bottom: var(--spacing-md) !important;
+  padding: var(--spacing-md) !important;
+}
+
+/* More compact add forms */
+.add-box-form, .add-item-form, .add-subcom-form {
+  gap: var(--spacing-md) !important;
+}
+
+/* More streamlined buttons */
+button {
+  padding: 8px 14px !important;
+  font-size: 13px !important;
+}
+
+/* Make card components more compact */
+.card {
+  padding: var(--spacing-md) !important;
+}
+
+.card-header {
+  margin-bottom: var(--spacing-md) !important;
+  padding-bottom: 10px !important;
+}
+
+.card-title {
+  font-size: 16px !important;
+}
+
+.card-body {
+  padding: 8px 0 !important;
+}
+
+/* Make transaction controls more compact */
+.transaction-controls {
+  margin-bottom: var(--spacing-md) !important;
+}
+
+/* Optimize operation forms */
+.operation-form {
+  padding: var(--spacing-md) !important;
+}
+
+.operation-form h3 {
+  font-size: 16px !important;
+  margin-bottom: 12px !important;
+}
+
+.radio-option {
+  margin-bottom: 6px !important;
+}
+
+.operations-buttons button {
+  padding: 8px 14px !important;
+}
+
+/* Make result boxes more compact */
+.result-box {
+  margin-top: var(--spacing-lg) !important;
+  padding: var(--spacing-md) !important;
+}
+
+.result-details {
+  margin-top: 8px !important;
+  font-size: 14px !important;
+}
+
+/* Ensure consistent box shadows */
+.shadow-sm {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Make confirmation modal more compact */
+.modal-header {
+  padding: 14px 16px !important;
+}
+
+.modal-body {
+  padding: 16px !important;
+}
+
+.modal-body p {
+  margin-bottom: 14px !important;
+  font-size: 14px !important;
+}
+
+.modal-footer {
+  padding: 0 16px 16px !important;
+}

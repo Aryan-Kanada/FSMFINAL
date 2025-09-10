@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Store - Debug Version</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="nav-brand">
+                    <i class="fas fa-store"></i>
+                    <span>Inventory Store (Debug)</span>
+                </div>
+                <div class="nav-menu">
+                    <a href="#products" class="nav-link">Products</a>
+                    <div class="cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Premium Products for Your Needs</h1>
+                <p class="hero-subtitle">Discover our carefully curated collection of high-quality items</p>
+                <a href="#products" class="btn-primary">Shop Now</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="products">
+        <div class="container">
+            <h2 class="section-title">Our Products</h2>
+            <div class="products-grid" id="productsGrid">
+                <div class="product-card">
+                    <p>Loading products...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/debug.js"></script>
+</body>
+</html>

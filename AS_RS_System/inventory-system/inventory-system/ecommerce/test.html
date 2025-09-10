@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .product { border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>API Test Page</h1>
+    <div id="status">Loading...</div>
+    <div id="products"></div>
+
+    <script>
+        console.log('Starting API test...');
+        
+        // Test API directly
+        fetch('http://localhost:5001/api/items')
+            .then(response => {
+                console.log('Response status:', response.status);
+                document.getElementById('status').innerHTML = `<div class="success">API Response Status: ${response.status}</div>`;
+                return response.json();
+            })
+            .then(data => {
+                console.log('Items data:', data);
+                document.getElementById('status').innerHTML += `<div class="success">Items loaded: ${data.data ? data.data.length : 0}</div>`;
+                
+                // Test available items
+                return fetch('http://localhost:5001/api/items/available');
+            })
+            .then(response => response.json())
+            .then(availableData => {
+                console.log('Available data:', availableData);
+                document.getElementById('status').innerHTML += `<div class="success">Available items: ${availableData.data ? availableData.data.length : 0}</div>`;
+                
+                // Display products
+                const productsDiv = document.getElementById('products');
+                if (availableData.data && availableData.data.length > 0) {
+                    productsDiv.innerHTML = '<h2>Products:</h2>' + 
+                        availableData.data.map(item => `
+                            <div class="product">
+                                <strong>${item.name}</strong> - Available: ${item.available_count}
+                            </div>
+                        `).join('');
+                } else {
+                    productsDiv.innerHTML = '<p>No products found</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('status').innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            });
+    </script>
+</body>
+</html>

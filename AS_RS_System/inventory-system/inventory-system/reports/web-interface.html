@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Reports Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .control-group {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .control-group h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+        }
+
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .reports-list {
+            margin-top: 30px;
+        }
+
+        .reports-list h3 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .report-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        .report-item h4 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .report-meta {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        .download-btn {
+            padding: 5px 10px;
+            font-size: 12px;
+            margin: 2px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #6c757d;
+            border-top: 1px solid #e9ecef;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Inventory Reports Generator</h1>
+            <p>Generate comprehensive inventory reports with analytics and insights</p>
+        </div>
+
+        <div class="content">
+            <div class="controls">
+                <div class="control-group">
+                    <h3>🗓️ Daily Reports</h3>
+                    <div class="form-group">
+                        <label for="dailyDate">Date (optional)</label>
+                        <input type="date" id="dailyDate" />
+                    </div>
+                    <div class="form-group">
+                        <label>Export Formats</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="dailyCsv" checked />
+                                <label for="dailyCsv">CSV</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="dailyPdf" checked />
+                                <label for="dailyPdf">PDF</label>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="generateDaily()">Generate Daily Report</button>
+                    <button onclick="generateMultipleDaily()">Generate Last 7 Days</button>
+                </div>
+
+                <div class="control-group">
+                    <h3>📅 Weekly Reports</h3>
+                    <div class="form-group">
+                        <label for="weeklyDate">Week Start Date (optional)</label>
+                        <input type="date" id="weeklyDate" />
+                    </div>
+                    <div class="form-group">
+                        <label>Export Formats</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="weeklyCsv" checked />
+                                <label for="weeklyCsv">CSV</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="weeklyPdf" checked />
+                                <label for="weeklyPdf">PDF</label>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="generateWeekly()">Generate Weekly Report</button>
+                    <button onclick="generateMultipleWeekly()">Generate Last 4 Weeks</button>
+                </div>
+
+                <div class="control-group">
+                    <h3>🗓️ Monthly Reports</h3>
+                    <div class="form-group">
+                        <label for="monthlyDate">Month Date (optional)</label>
+                        <input type="date" id="monthlyDate" />
+                    </div>
+                    <div class="form-group">
+                        <label>Export Formats</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="monthlyCsv" checked />
+                                <label for="monthlyCsv">CSV</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="monthlyPdf" checked />
+                                <label for="monthlyPdf">PDF</label>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="generateMonthly()">Generate Monthly Report</button>
+                    <button onclick="generateAllReports()">Generate All Reports</button>
+                </div>
+            </div>
+
+            <div class="status" id="status"></div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Generating report... Please wait</p>
+            </div>
+
+            <div class="reports-list" id="reportsList">
+                <h3>📁 Available Reports</h3>
+                <div class="reports-grid" id="reportsGrid">
+                    <!-- Reports will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Inventory Management System Reports Generator | Generated reports are saved to the output directory</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3002/api';
+
+        // Utility functions
+        function showStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    status.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        function showLoading(show = true) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        function getFormats(prefix) {
+            const formats = [];
+            if (document.getElementById(`${prefix}Csv`).checked) formats.push('csv');
+            if (document.getElementById(`${prefix}Pdf`).checked) formats.push('pdf');
+            return formats;
+        }
+
+        // API calls
+        async function makeRequest(endpoint, data = {}) {
+            try {
+                showLoading(true);
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                showLoading(false);
+
+                if (result.success) {
+                    showStatus('Report generated successfully!', 'success');
+                    loadReportsList();
+                } else {
+                    showStatus(`Error: ${result.error || 'Unknown error'}`, 'error');
+                }
+
+                return result;
+            } catch (error) {
+                showLoading(false);
+                showStatus(`Network error: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        // Report generation functions
+        async function generateDaily() {
+            const date = document.getElementById('dailyDate').value || null;
+            const formats = getFormats('daily');
+            
+            if (formats.length === 0) {
+                showStatus('Please select at least one export format', 'error');
+                return;
+            }
+
+            await makeRequest('/reports/daily', { date, formats });
+        }
+
+        async function generateMultipleDaily() {
+            const formats = getFormats('daily');
+            
+            if (formats.length === 0) {
+                showStatus('Please select at least one export format', 'error');
+                return;
+            }
+
+            await makeRequest('/reports/daily/multiple', { days: 7, formats });
+        }
+
+        async function generateWeekly() {
+            const date = document.getElementById('weeklyDate').value || null;
+            const formats = getFormats('weekly');
+            
+            if (formats.length === 0) {
+                showStatus('Please select at least one export format', 'error');
+                return;
+            }
+
+            await makeRequest('/reports/weekly', { date, formats });
+        }
+
+        async function generateMultipleWeekly() {
+            const formats = getFormats('weekly');
+            
+            if (formats.length === 0) {
+                showStatus('Please select at least one export format', 'error');
+                return;
+            }
+
+            await makeRequest('/reports/weekly/multiple', { weeks: 4, formats });
+        }
+
+        async function generateMonthly() {
+            const date = document.getElementById('monthlyDate').value || null;
+            const formats = getFormats('monthly');
+            
+            if (formats.length === 0) {
+                showStatus('Please select at least one export format', 'error');
+                return;
+            }
+
+            await makeRequest('/reports/monthly', { date, formats });
+        }
+
+        async function generateAllReports() {
+            const formats = ['csv', 'pdf']; // Generate all formats for comprehensive report
+            await makeRequest('/reports/all', { formats });
+        }
+
+        // Load and display available reports
+        async function loadReportsList() {
+            try {
+                const response = await fetch(`${API_BASE}/reports/list`);
+                const result = await response.json();
+
+                if (result.success) {
+                    displayReports(result.reports);
+                }
+            } catch (error) {
+                console.error('Error loading reports list:', error);
+            }
+        }
+
+        function displayReports(reports) {
+            const grid = document.getElementById('reportsGrid');
+            grid.innerHTML = '';
+
+            const allReports = [...reports.csv, ...reports.pdf];
+            
+            if (allReports.length === 0) {
+                grid.innerHTML = '<p style="color: #6c757d; text-align: center; grid-column: 1/-1;">No reports generated yet. Create your first report using the controls above.</p>';
+                return;
+            }
+
+            allReports
+                .sort((a, b) => new Date(b.created) - new Date(a.created))
+                .forEach(report => {
+                    const item = document.createElement('div');
+                    item.className = 'report-item';
+                    
+                    const type = report.filename.includes('.csv') ? 'CSV' : 'PDF';
+                    const icon = type === 'CSV' ? '📊' : '📄';
+                    const size = formatFileSize(report.size);
+                    const date = new Date(report.created).toLocaleString();
+
+                    item.innerHTML = `
+                        <h4>${icon} ${report.filename}</h4>
+                        <div class="report-meta">
+                            <div>Type: ${type}</div>
+                            <div>Size: ${size}</div>
+                            <div>Created: ${date}</div>
+                        </div>
+                        <button class="download-btn" onclick="downloadReport('${type.toLowerCase()}', '${report.filename}')">
+                            📥 Download
+                        </button>
+                    `;
+
+                    grid.appendChild(item);
+                });
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        async function downloadReport(type, filename) {
+            try {
+                const url = `${API_BASE}/reports/download/${type}/${filename}`;
+                window.open(url, '_blank');
+                showStatus(`Downloading ${filename}...`, 'info');
+            } catch (error) {
+                showStatus(`Download failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date as default
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dailyDate').value = today;
+            
+            // Load existing reports
+            loadReportsList();
+
+            // Check server health
+            fetch(`${API_BASE.replace('/api', '')}/health`)
+                .then(response => response.json())
+                .then(result => {
+                    if (result.status === 'healthy') {
+                        showStatus('Reports server is online and ready', 'success');
+                    }
+                })
+                .catch(error => {
+                    showStatus('Unable to connect to reports server. Make sure it\'s running on port 3002.', 'error');
+                });
+        });
+
+        // Auto-refresh reports list every 30 seconds
+        setInterval(loadReportsList, 30000);
+    </script>
+</body>
+</html>

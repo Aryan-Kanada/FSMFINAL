@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug API Connection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+    </style>
+</head>
+<body>
+    <h1>API Connection Debug</h1>
+    <button onclick="testAPI()">Test API Connection</button>
+    <div id="results"></div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5001/api';
+        
+        async function testAPI() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<p>Testing...</p>';
+            
+            try {
+                // Test 1: Basic API connection
+                console.log('Testing basic API connection...');
+                const response1 = await fetch(`${API_BASE_URL}/items`);
+                const data1 = await response1.json();
+                
+                resultsDiv.innerHTML += `<div class="result success">
+                    <strong>✓ Items API Test:</strong> Success! Found ${data1.data.length} items
+                    <pre>${JSON.stringify(data1, null, 2)}</pre>
+                </div>`;
+                
+                // Test 2: Available items
+                console.log('Testing available items API...');
+                const response2 = await fetch(`${API_BASE_URL}/items/available`);
+                const data2 = await response2.json();
+                
+                resultsDiv.innerHTML += `<div class="result success">
+                    <strong>✓ Available Items API Test:</strong> Success! Found ${data2.data.length} available items
+                    <pre>${JSON.stringify(data2, null, 2)}</pre>
+                </div>`;
+                
+                // Test 3: Try to render a simple product list
+                const items = data1.data || [];
+                const availableItems = data2.data || [];
+                
+                const availabilityMap = availableItems.reduce((acc, item) => {
+                    acc[item.item_id] = item.available_count;
+                    return acc;
+                }, {});
+                
+                const products = items.map(item => ({
+                    ...item,
+                    available_count: availabilityMap[item.item_id] || 0,
+                    price: 10 + (item.item_id * 7) % 20 + 1 + (item.item_id % 10)
+                }));
+                
+                let productHTML = '<h3>Products List:</h3><ul>';
+                products.forEach(product => {
+                    productHTML += `<li>
+                        <strong>${product.name}</strong> - $${product.price.toFixed(2)} 
+                        (${product.available_count} available)
+                        <br><em>${product.description || 'No description'}</em>
+                    </li>`;
+                });
+                productHTML += '</ul>';
+                
+                resultsDiv.innerHTML += `<div class="result success">
+                    <strong>✓ Product Processing Test:</strong> Success!
+                    ${productHTML}
+                </div>`;
+                
+            } catch (error) {
+                console.error('API test failed:', error);
+                resultsDiv.innerHTML += `<div class="result error">
+                    <strong>✗ API Test Failed:</strong> ${error.message}
+                    <pre>${error.stack}</pre>
+                </div>`;
+            }
+        }
+        
+        // Auto-run test on page load
+        window.addEventListener('load', testAPI);
+    </script>
+</body>
+</html>
