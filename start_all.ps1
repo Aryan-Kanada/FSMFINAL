@@ -1,25 +1,12 @@
-# start_all.ps1
+# Start ASRS Integration Service in new window
+Start-Process powershell -ArgumentList '-NoExit', '-Command', "cd .\AS_RS_System\asrs_integration; .\.venv\Scripts\Activate.ps1; python main_service.py"
 
-# 1) Start AS/RS Integration Service
-Write-Host "Starting AS/RS Integration Service..."
-Push-Location .\AS_RS_System\asrs_integration
-# Activate virtualenv
-& "..\..\.venv\Scripts\Activate.ps1"
-Start-Process -NoNewWindow -FilePath python -ArgumentList main_service.py
-Pop-Location
+# Start Backend API in new window
+Start-Process powershell -ArgumentList '-NoExit', '-Command', "cd .\AS_RS_System\inventory-system\inventory-system\backend; npm run dev"
 
-# 2) Start Backend API
-Write-Host "Starting Backend API..."
-Push-Location .\AS_RS_System\inventory-system\backend
-npm install
-Start-Process -NoNewWindow -FilePath npm -ArgumentList 'run','dev'
-Pop-Location
+# Start Frontend UI in new window
+Start-Process powershell -ArgumentList '-NoExit', '-Command', "cd .\AS_RS_System\inventory-system\inventory-system\frontend; npm run dev"
 
-# 3) Start Frontend UI
-Write-Host "Starting Frontend UI..."
-Push-Location .\AS_RS_System\inventory-system\frontend
-npm install
-Start-Process -NoNewWindow -FilePath npm -ArgumentList 'run','dev'
-Pop-Location
-
-Write-Host "All services started. Frontend: http://localhost:5173  Backend: http://localhost:4000/api"
+Write-Host "All services launched in new PowerShell windows."
+Write-Host "Frontend: http://localhost:5173"
+Write-Host "Backend: http://localhost:4000/api"
