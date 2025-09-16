@@ -1,4 +1,3 @@
-
 """
 Order Monitor Service
 Monitors database for new orders and triggers ASRS operations
@@ -73,10 +72,10 @@ class OrderMonitor:
             cursor = conn.cursor(dictionary=True)
 
             query = """
-            SELECT subcom_place, item_id
+            SELECT box_id, item_id
             FROM SubCompartments 
             WHERE item_id = %s AND status = 'Occupied'
-            ORDER BY subcom_place
+            ORDER BY box_id
             LIMIT %s
             """
             cursor.execute(query, (item_id, quantity_needed))
@@ -138,12 +137,12 @@ class OrderMonitor:
 
             if status == 'Empty':
                 cursor.execute(
-                    "UPDATE SubCompartments SET status = %s, item_id = NULL WHERE subcom_place = %s",
+                    "UPDATE SubCompartments SET status = %s, item_id = NULL WHERE box_id = %s",
                     (status, location)
                 )
             else:
                 cursor.execute(
-                    "UPDATE SubCompartments SET status = %s WHERE subcom_place = %s",
+                    "UPDATE SubCompartments SET status = %s WHERE box_id = %s",
                     (status, location)
                 )
 
@@ -177,7 +176,7 @@ class OrderMonitor:
 
         # Process each location
         for i, location_data in enumerate(locations[:quantity]):
-            location = location_data['subcom_place']
+            location = location_data['box_id']  # CHANGED FROM 'subcom_place' to 'box_id'
 
             try:
                 logger.info(f"📦 Retrieving item {i+1}/{quantity} from {location}")
@@ -277,8 +276,8 @@ if __name__ == "__main__":
     db_config = {
         'host': 'localhost',
         'database': 'inventory_management',
-        'user': 'root',  # Update with your credentials
-        'password': 'password',  # Update with your credentials
+        'user': 'root',
+        'password': 'password',
         'autocommit': True
     }
 
