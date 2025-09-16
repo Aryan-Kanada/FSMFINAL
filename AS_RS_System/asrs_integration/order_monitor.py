@@ -5,9 +5,7 @@ Monitors database for new orders and triggers ASRS operations
 
 import mysql.connector
 import time
-import threading
 import logging
-from datetime import datetime
 from asrs_control_enhanced import ASRSController
 
 # Configure logging
@@ -48,7 +46,7 @@ class OrderMonitor:
             query = """
             SELECT o.order_id, o.customer_name, o.customer_email, o.order_status,
                    oi.order_item_id, oi.item_id, oi.quantity, i.name as item_name
-            FROM Orders o 
+            FROM Orders o
             JOIN OrderItems oi ON o.order_id = oi.order_id
             JOIN Items i ON oi.item_id = i.item_id
             WHERE o.order_id > %s AND o.order_status = 'pending'
@@ -60,7 +58,6 @@ class OrderMonitor:
             cursor.close()
             conn.close()
             return orders
-
         except Exception as e:
             logger.error(f"Error getting new orders: {e}")
             return []
@@ -72,10 +69,10 @@ class OrderMonitor:
             cursor = conn.cursor(dictionary=True)
 
             query = """
-            SELECT box_id, item_id
-            FROM SubCompartments 
+            SELECT subcom_place, box_id, item_id
+            FROM SubCompartments
             WHERE item_id = %s AND status = 'Occupied'
-            ORDER BY box_id
+            ORDER BY subcom_place
             LIMIT %s
             """
             cursor.execute(query, (item_id, quantity_needed))
@@ -84,7 +81,6 @@ class OrderMonitor:
             cursor.close()
             conn.close()
             return locations
-
         except Exception as e:
             logger.error(f"Error finding item locations: {e}")
             return []
@@ -104,12 +100,11 @@ class OrderMonitor:
             conn.close()
             logger.info(f"📝 Updated order {order_id} status to {status}")
             return True
-
         except Exception as e:
             logger.error(f"Error updating order status: {e}")
             return False
 
-    def record_transaction(self, item_id, location, action='retrieved'):
+    def record_transaction(self, item_id, subcom_place, action='retrieved'):
         """Record transaction in database"""
         try:
             conn = self.get_db_connection()
@@ -117,19 +112,18 @@ class OrderMonitor:
 
             cursor.execute(
                 "INSERT INTO Transactions (item_id, subcom_place, action, time) VALUES (%s, %s, %s, NOW())",
-                (item_id, location, action)
+                (item_id, subcom_place, action)
             )
             conn.commit()
             cursor.close()
             conn.close()
-            logger.info(f"📋 Recorded transaction: {action} item {item_id} from {location}")
+            logger.info(f"📋 Recorded transaction: {action} item {item_id} from {subcom_place}")
             return True
-
         except Exception as e:
             logger.error(f"Error recording transaction: {e}")
             return False
 
-    def update_subcompartment_status(self, location, status='Empty'):
+    def update_subcompartment_status(self, box_id, status='Empty'):
         """Update subcompartment status after retrieval"""
         try:
             conn = self.get_db_connection()
@@ -138,20 +132,19 @@ class OrderMonitor:
             if status == 'Empty':
                 cursor.execute(
                     "UPDATE SubCompartments SET status = %s, item_id = NULL WHERE box_id = %s",
-                    (status, location)
+                    (status, box_id)
                 )
             else:
                 cursor.execute(
                     "UPDATE SubCompartments SET status = %s WHERE box_id = %s",
-                    (status, location)
+                    (status, box_id)
                 )
 
             conn.commit()
             cursor.close()
             conn.close()
-            logger.info(f"🗃️ Updated {location} status to {status}")
+            logger.info(f"🗃️ Updated {box_id} status to {status}")
             return True
-
         except Exception as e:
             logger.error(f"Error updating subcompartment status: {e}")
             return False
@@ -165,37 +158,28 @@ class OrderMonitor:
 
         logger.info(f"🛍️ Processing order {order_id}: {quantity}x {item_name} (ID: {item_id})")
 
-        # Find item locations
         locations = self.find_item_locations(item_id, quantity)
-
         if len(locations) < quantity:
             logger.warning(f"⚠️ Insufficient stock: need {quantity}, found {len(locations)}")
             return False
 
         success_count = 0
-
-        # Process each location
-        for i, location_data in enumerate(locations[:quantity]):
-            location = location_data['box_id']  # CHANGED FROM 'subcom_place' to 'box_id'
+        for i, loc in enumerate(locations[:quantity]):
+            subcom_place = loc['subcom_place']  # e.g. "A5c"
+            box_id = loc['box_id']              # e.g. "A5"
 
             try:
-                logger.info(f"📦 Retrieving item {i+1}/{quantity} from {location}")
-
-                # Execute ASRS retrieval
-                if self.asrs.execute_command('retrieve', location):
-                    # Update database records
-                    self.record_transaction(item_id, location, 'retrieved')
-                    self.update_subcompartment_status(location, 'Empty')
+                logger.info(f"📦 Retrieving item {i+1}/{quantity} from {box_id}")
+                if self.asrs.execute_command('retrieve', box_id):
+                    self.record_transaction(item_id, subcom_place, 'retrieved')
+                    self.update_subcompartment_status(box_id, 'Empty')
                     success_count += 1
-                    logger.info(f"✅ Successfully retrieved from {location}")
-
-                    # Wait between operations
+                    logger.info(f"✅ Successfully retrieved from {box_id}")
                     time.sleep(3)
                 else:
-                    logger.error(f"❌ Failed to retrieve from {location}")
-
+                    logger.error(f"❌ Failed to retrieve from {box_id}")
             except Exception as e:
-                logger.error(f"Error processing location {location}: {e}")
+                logger.error(f"Error processing location {box_id}: {e}")
 
         return success_count == quantity
 
@@ -205,14 +189,10 @@ class OrderMonitor:
         customer_name = order_data['customer_name']
 
         logger.info(f"🎯 Starting order {order_id} for {customer_name}")
-
-        # Update order status to processing
         self.update_order_status(order_id, 'processing')
 
         try:
-            # Process the order item
             success = self.process_order_item(order_data)
-
             if success:
                 self.update_order_status(order_id, 'shipped')
                 logger.info(f"✅ Order {order_id} completed successfully!")
@@ -221,7 +201,6 @@ class OrderMonitor:
                 self.update_order_status(order_id, 'cancelled')
                 logger.error(f"❌ Order {order_id} failed - marked as cancelled")
                 return False
-
         except Exception as e:
             logger.error(f"Error processing order {order_id}: {e}")
             self.update_order_status(order_id, 'cancelled')
@@ -231,37 +210,20 @@ class OrderMonitor:
         """Main monitoring loop"""
         self.running = True
         logger.info("🚀 Order monitoring started...")
-
         while self.running:
             try:
                 new_orders = self.get_new_orders()
-
                 if new_orders:
-                    # Group orders by order_id
                     orders_dict = {}
                     for order in new_orders:
-                        order_id = order['order_id']
-                        if order_id not in orders_dict:
-                            orders_dict[order_id] = []
-                        orders_dict[order_id].append(order)
-
-                    # Process each order
-                    for order_id, order_items in orders_dict.items():
-                        logger.info(f"🆕 New order detected: {order_id}")
-
-                        # Process each item in the order
-                        order_success = True
-                        for order_item in order_items:
-                            item_success = self.process_order(order_item)
-                            if not item_success:
-                                order_success = False
-
-                        # Update last processed order ID
-                        self.last_checked_order_id = max(self.last_checked_order_id, order_id)
-
-                # Wait before next check
+                        oid = order['order_id']
+                        orders_dict.setdefault(oid, []).append(order)
+                    for oid, items in orders_dict.items():
+                        logger.info(f"🆕 New order detected: {oid}")
+                        for item in items:
+                            self.process_order(item)
+                        self.last_checked_order_id = max(self.last_checked_order_id, oid)
                 time.sleep(5)
-
             except Exception as e:
                 logger.error(f"Error in monitoring loop: {e}")
                 time.sleep(10)
@@ -272,7 +234,6 @@ class OrderMonitor:
         logger.info("🛑 Stopping order monitoring...")
 
 if __name__ == "__main__":
-    # Database configuration
     db_config = {
         'host': 'localhost',
         'database': 'inventory_management',
@@ -280,9 +241,7 @@ if __name__ == "__main__":
         'password': 'password',
         'autocommit': True
     }
-
     monitor = OrderMonitor(db_config)
-
     try:
         monitor.monitor_orders()
     except KeyboardInterrupt:
