@@ -1,4 +1,5 @@
 const SubCompartmentModel = require('../models/subCompartment');
+const ASRSIntegrationService = require('../services/asrsIntegration');
 
 class SubCompartmentController {
   // Get all subcompartments
@@ -154,7 +155,18 @@ class SubCompartmentController {
       }
       
       const result = await SubCompartmentModel.addProduct(boxId, subId, itemId);
-      
+
+      // Notify ASRS after product is successfully added
+      try {
+        await ASRSIntegrationService.notifyProductAdded(
+          result.subcom_place,
+          itemId,
+          'Occupied'
+        );
+      } catch (err) {
+        console.error('ASRS notification failed (addProduct):', err.message);
+      }
+
       res.status(201).json({
         success: true,
         data: result
@@ -182,7 +194,14 @@ class SubCompartmentController {
       }
       
       const result = await SubCompartmentModel.retrieveProduct(itemId, quantity);
-      
+
+      // Notify ASRS after product(s) successfully retrieved
+      try {
+        await ASRSIntegrationService.notifyProductRetrieved(result);
+      } catch (err) {
+        console.error('ASRS notification failed (retrieveProduct):', err.message);
+      }
+
       res.status(200).json({
         success: true,
         data: result

@@ -1,4 +1,5 @@
 const OrderModel = require('../models/order');
+const ASRSIntegrationService = require('../services/asrsIntegration');
 
 class OrderController {
   // Create new order
@@ -50,6 +51,17 @@ class OrderController {
       };
       
       const order = await OrderModel.createOrder(orderData);
+
+      // Notify ASRS after successful order placement (do not make order fail if this fails)
+      try {
+        await ASRSIntegrationService.notifyOrderPlacement({
+          order_id: order.order_id,
+          customer_name: orderData.customer_name,
+          items: orderData.items
+        });
+      } catch (err) {
+        console.error('ASRS notification failed:', err.message);
+      }
       
       res.status(201).json({
         success: true,
