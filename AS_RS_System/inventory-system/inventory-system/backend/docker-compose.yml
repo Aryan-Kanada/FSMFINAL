@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  backend:
+    build: ./backend
+    env_file: .env
+    ports:
+      - "${PORT_BACKEND}:4000"
+  frontend:
+    build: ./frontend
+    ports:
+      - "${PORT_FRONTEND}:3000"
+  aryan:
+    build:
+      context: .
+      dockerfile: Dockerfile.aryan
+    env_file: .env
+    ports:
+      - "${PORT_ARYAN}:5000"
+  asrs_control:
+    build:
+      context: .
+      dockerfile: Dockerfile.asrs
+    env_file: .env
+    ports:
+      - "${ASRS_PORT}:8888"
