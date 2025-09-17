@@ -1,9 +1,9 @@
 import time
+import asyncio
 from opcua import Client, ua
 
 SERVER_URL = "opc.tcp://10.10.14.104:4840"
 
-# Map uppercase commands to node names
 STORE_TAGS = {f"{l}{n}S": f"{l}{n}S" for l in "ABCDE" for n in range(1, 8)}
 RETRIEVE_TAGS = {f"{l}{n}": f"{l}{n}" for l in "ABCDE" for n in range(1, 8)}
 
@@ -15,30 +15,54 @@ def pulse_node(client, tag_name, duration=0.1):
     time.sleep(duration)
     node.set_attribute(ua.AttributeIds.Value, variant_false)
 
-def main():
+async def handle_client(reader, writer):
     client = Client(SERVER_URL)
-    client.connect()
+    await asyncio.to_thread(client.connect)
+    addr = writer.get_extra_info('peername')
+    print(f"Connected to {addr}")
     try:
-        cmd = input("Write your command (e.g. A1S-E7S for Store or A1-E7 for Retrieve): ").strip().upper()
-        if cmd in STORE_TAGS:
-            tag = STORE_TAGS[cmd]
-            action = "Store"
-            loc = tag[:-1]
-        elif cmd in RETRIEVE_TAGS:
-            tag = RETRIEVE_TAGS[cmd]
-            action = "Retrieve"
-            loc = tag
-        else:
-            print(f"Invalid tag '{cmd}'. Use A1–E7 or A1S–E7S.")
-            return
-# Author: Aryan Kanada
-        try:
-            pulse_node(client, tag)
-            print(f"{action} at {loc}")
-        except ua.UaStatusCodeError as e:
-            print(f"Write failed: {e}")
+        while True:
+            data = await reader.readline()
+            if not data:
+                break
+            cmd = data.decode().strip().upper()
+            print(f"Received command: {cmd}")
+            if cmd in STORE_TAGS:
+                tag = STORE_TAGS[cmd]
+                action = "Store"
+                loc = tag[:-1]
+            elif cmd in RETRIEVE_TAGS:
+                tag = RETRIEVE_TAGS[cmd]
+                action = "Retrieve"
+                loc = tag
+            else:
+                msg = f"Invalid tag '{cmd}'. Use A1–E7 or A1S–E7S.\n"
+                writer.write(msg.encode())
+                await writer.drain()
+                continue
+            try:
+                await asyncio.to_thread(pulse_node, client, tag)
+                response = f"{action} at {loc}\n"
+                print(response.strip())
+                writer.write(response.encode())
+                await writer.drain()
+            except Exception as e:
+                err = f"Write failed: {e}\n"
+                print(err.strip())
+                writer.write(err.encode())
+                await writer.drain()
     finally:
         client.disconnect()
+        print(f"Disconnected from {addr}")
+        writer.close()
+        await writer.wait_closed()
+
+async def main():
+    server = await asyncio.start_server(handle_client, "127.0.0.1", 8888)
+    addrs = ", ".join(str(sock.getsockname()) for sock in server.sockets)
+    print(f"Server listening on {addrs}")
+    async with server:
+        await server.serve_forever()
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

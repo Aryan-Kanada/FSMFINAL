@@ -16,12 +16,47 @@ function OperationsTab() {
   const [availableItems, setAvailableItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+    // Function to trigger ASRS physical operation
+    const triggerASRS = async (command) => {
+      try {
+        const response = await fetch('http://localhost:5000/asrs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ command })
+        });
+        const data = await response.json();
+        if (response.ok) {
+          toast.success(data.result || 'ASRS command sent!');
+        } else {
+          toast.error(data.error || 'ASRS error');
+        }
+      } catch (err) {
+        toast.error('Failed to reach ASRS API');
+      }
+    };
 
   useEffect(() => {
     fetchItems();
     fetchBoxes();
     fetchAvailableItems();
   }, []);
+
+  // Call ASRS when a product is retrieved (after successful retrieval)
+  useEffect(() => {
+    if (
+      result &&
+      result.operation === 'retrieve' &&
+      result.details &&
+      result.details.locations &&
+      result.details.locations.length > 0
+    ) {
+      // Use the first location's place as the ASRS tag (customize as needed)
+      const locationTag = result.details.locations[0].place;
+      if (locationTag) {
+        triggerASRS(locationTag);
+      }
+    }
+  }, [result]);
 
   const fetchItems = async () => {
     try {
