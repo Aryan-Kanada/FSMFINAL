@@ -38,4 +38,6 @@ def asrs_command():
         client.disconnect()
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=4000)
+    import os
+    PORT_ASRS_API = int(os.getenv('PORT_ASRS_API', '4001'))
+    app.run(host="0.0.0.0", port=PORT_ASRS_API)

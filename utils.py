@@ -2,7 +2,7 @@
 import re
 
 def parse_retrieval_location(loc_str):
-    m = re.match(r"([A-E])([1-7])", loc_str)
+    m = re.match(r"^([A-E][1-7])", loc_str)
     return m.group(1) + m.group(2) if m else None
 
 def parse_storage_update(location_str, status):

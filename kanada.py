@@ -14,27 +14,29 @@ async def run_command(cmd, cwd=None):
     )
 
 async def main():
-    base = r"C:\Users\kanad\PycharmProjects\FSMFINAL"
+    base = os.path.dirname(os.path.abspath(__file__))
 
     print("Starting ASRS control server...")
-    asrs = await run_command("python AS_RS_System\\asrs_control.py", cwd=base)
-    await asyncio.sleep(2)
-
+    asrs = await run_command("python AS_RS_System/asrs_control.py", cwd=base)
     print("Starting aryan.py service...")
     aryan = await run_command("python aryan.py", cwd=base)
-    await asyncio.sleep(2)
-
     print("Starting backend server...")
     backend = await run_command("npm run dev", cwd=os.path.join(base, "AS_RS_System","inventory-system","inventory-system","backend"))
-    await asyncio.sleep(5)
-
     print("Starting frontend server...")
     frontend = await run_command("npm run dev", cwd=os.path.join(base, "AS_RS_System","inventory-system","inventory-system","frontend"))
-    await asyncio.sleep(5)
 
     print("✅ All services started successfully!")
 
-    # Health check URLs
+    async def wait_for_service(url, max_attempts=10):
+        for attempt in range(max_attempts):
+            try:
+                response = requests.get(url, timeout=3)
+                if response.status_code == 200:
+                    return True
+            except:
+                await asyncio.sleep(2)
+        return False
+
     services = {
         "Frontend": f"http://localhost:{os.getenv('PORT_FRONTEND', '3000')}",
         "Backend":  f"http://localhost:{os.getenv('PORT_BACKEND', '4000')}/health",
@@ -42,20 +44,14 @@ async def main():
     }
 
     for name, url in services.items():
-        print(f"Checking {name} at {url}...", end=" ")
-        for _ in range(5):
-            try:
-                r = requests.get(url, timeout=3)
-                print(f"OK ({r.status_code})")
-                if name == "Frontend":
-                    webbrowser.open(url)
-                break
-            except Exception:
-                time.sleep(2)
+        print(f"Waiting for {name} at {url}...", end=" ")
+        if await wait_for_service(url):
+            print("OK")
+            if name == "Frontend":
+                webbrowser.open(url)
         else:
             print("Failed")
 
-    # Keep all servers running
     await asyncio.gather(
         asrs.wait(),
         aryan.wait(),
