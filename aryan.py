@@ -49,13 +49,22 @@ def run_async(cmd):
 def handle_backend_data():
     data = request.json
     logging.debug(f"Received data: {json.dumps(data)}")
-    commands=[]
-    # order_placed, product_added, product_retrieved logic using parse utils...
-    # For brevity, reuse existing logic but call BACKEND_API instead of localhost:4000
-    # ...
+    commands = []
+    # Handle product_added
+    if data.get('type') == 'product_added':
+        loc = parse_storage_update(data['subcom_place'], data['status'])
+        if loc:
+            commands.append(loc.upper())
+    # Handle product_retrieved
+    elif data.get('type') == 'product_retrieved':
+        for loc in data.get('locations', []):
+            loc_tag = parse_retrieval_location(loc)
+            if loc_tag:
+                commands.append(loc_tag.upper())
+    # Send commands to ASRS TCP server
     for cmd in commands:
         threading.Thread(target=run_async, args=(cmd,)).start()
-    return jsonify({"status":"success","processed":commands})
+    return jsonify({"status": "success", "processed": commands})
 
 @app.route('/health', methods=['GET'])
 def health():
