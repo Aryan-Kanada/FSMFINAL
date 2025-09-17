@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from asrs_control import pulse_node, STORE_TAGS, RETRIEVE_TAGS, SERVER_URL
+import os
 from opcua import Client, ua
 
 app = Flask(__name__)
@@ -37,7 +38,9 @@ def asrs_command():
     finally:
         client.disconnect()
 
+# ---------------------------------------------------------------------------
+# Launch on configurable, non-colliding port (default 4001)
+# ---------------------------------------------------------------------------
 if __name__ == "__main__":
-    import os
-    PORT_ASRS_API = int(os.getenv('PORT_ASRS_API', '4001'))
+    PORT_ASRS_API = int(os.getenv("PORT_ASRS_API", "4001"))
     app.run(host="0.0.0.0", port=PORT_ASRS_API)

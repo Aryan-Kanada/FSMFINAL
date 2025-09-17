@@ -23,8 +23,8 @@ const orderRoutes = require('./routes/orderRoutes');
 // Initialize app
 const app = express();
 
-// CORS restricted to frontend origin
-app.use(cors({ origin: `http://localhost:${process.env.PORT_FRONTEND}` }));
+// CORS – allow dev frontend
+app.use(cors({ origin: `http://localhost:${process.env.PORT_FRONTEND || 3000}` }));
 
 // Body parsing
 app.use(express.json());

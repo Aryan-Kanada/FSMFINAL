@@ -156,16 +156,13 @@ class SubCompartmentController {
       
       const result = await SubCompartmentModel.addProduct(boxId, subId, itemId);
 
-      // Notify ASRS after product is successfully added
-      try {
-        await ASRSIntegrationService.notifyProductAdded(
-          result.subcom_place,
-          itemId,
-          'Occupied'
-        );
-      } catch (err) {
-        console.error('ASRS notification failed (addProduct):', err.message);
-      }
+      // ── NEW ── notify Aryan service so ASRS moves hardware
+      const { sendEvent } = require("../services/asrsNotifier");
+      await sendEvent({
+        type: "product_added",
+        subcom_place: result.subcom_place,
+        status: "occupied",
+      });
 
       res.status(201).json({
         success: true,
@@ -195,12 +192,12 @@ class SubCompartmentController {
       
       const result = await SubCompartmentModel.retrieveProduct(itemId, quantity);
 
-      // Notify ASRS after product(s) successfully retrieved
-      try {
-        await ASRSIntegrationService.notifyProductRetrieved(result);
-      } catch (err) {
-        console.error('ASRS notification failed (retrieveProduct):', err.message);
-      }
+      // ── NEW ── notify Aryan service for each retrieved location
+      const { sendEvent } = require("../services/asrsNotifier");
+      await sendEvent({
+        type: "product_retrieved",
+        locations: result.locations ? result.locations.map(l => l.place) : [],
+      });
 
       res.status(200).json({
         success: true,

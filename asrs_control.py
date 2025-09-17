@@ -12,6 +12,10 @@ logging.basicConfig(
 )
 
 OPCUA_URL = os.getenv('OPCUA_SERVER_URL')
+# ---------------------------------------------------------------------------
+# Export SERVER_URL so that asrs_api.py can import it without crashing
+# ---------------------------------------------------------------------------
+SERVER_URL = OPCUA_URL or "opc.tcp://localhost:4840"
 ASRS_HOST = os.getenv('ASRS_HOST','127.0.0.1')
 ASRS_PORT = int(os.getenv('ASRS_PORT','8888'))
 
