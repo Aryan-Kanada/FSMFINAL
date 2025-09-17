@@ -49,6 +49,12 @@ app.get('/', (req, res) => {
   res.send('Inventory Management System API');
 });
 
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
+
 // Error handling
 app.use((err, req, res, next) => {
   logger.error(err.stack);
